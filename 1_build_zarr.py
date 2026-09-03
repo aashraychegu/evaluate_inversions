@@ -2,7 +2,7 @@ from argparse import ArgumentParser
 from pathlib import Path
 from tqdm import tqdm
 from load_trained_network import load_trained_network
-from shapely import wkt, Polygon
+from shapely import wkt, Polygon, GeometryCollection, MultiPolygon
 from shapely import contains_xy
 import tomllib
 import shutil
@@ -51,29 +51,36 @@ def regrid_scalar(src_x, src_y, src_values, X, Y, valid_mask):
     grid = np.where(valid_mask, grid, np.nan)
     return grid
 
+def outer_shell(geom):
+    if isinstance(geom, GeometryCollection):
+        parts = [g for g in geom.geoms if isinstance(g, (Polygon, MultiPolygon))]
+        geom = max(parts, key=lambda g: g.area)
+    if isinstance(geom, MultiPolygon):
+        geom = max(geom.geoms, key=lambda g: g.area)
+    return Polygon(geom.exterior)
 
 buffersize = .1
 
-data_vars = [
-        "regrid_h",  
-        "regrid_vx", 
-        "regrid_vy", 
-        "mask",      
-        "h",
-        "u",
-        "v",
-        "e_eff",
-        "e_xx", 
-        "e_xy", 
-        "e_yy", 
-        "tau_eff", 
-        "tau_xx", 
-        "tau_xy", 
-        "tau_yy", 
-        "tau_1", 
-        "tau_2", 
-        "R_xx"
-    ]
+data_vars = {
+        ("regrid_h",): None,
+        ("regrid_u",): None, 
+        ("regrid_v",): None, 
+        ("mask",): None, 
+        ("h",): None,
+        ("u",): None,
+        ("v",): None,
+        ("e_eff",): None,
+        ("e_xx",): None, 
+        ("e_xy",): None, 
+        ("e_yy",): None, 
+        ("tau_eff",): None, 
+        ("tau_xx",): None, 
+        ("tau_xy",): None, 
+        ("tau_yy",): None, 
+        ("tau_1",): None, 
+        ("tau_2",): None, 
+        ("R_xx",): None,
+}
 
 shelves_path = Path(".shelves.toml")
 shelf_to_bbox = tomllib.loads(shelves_path.read_text())
@@ -88,7 +95,6 @@ for subfolder in (pbar := tqdm(subfolders, smoothing = 0, position = 0, dynamic_
     name = subfolder.name
     shelf = name.split("__")[0]
     res = shelf_to_bbox[shelf].get("res",500)
-    tqdm.write(f"{res}")
     
     fields_and_residuals_path = subfolder / "field_and_residual_data.npz"
     raw_source = np.load(fields_and_residuals_path)
@@ -119,7 +125,9 @@ for subfolder in (pbar := tqdm(subfolders, smoothing = 0, position = 0, dynamic_
     thickness_name = split[2]
 
     polygon = wkt.loads(polygon_path.read_text())
-    outer_polygon = Polygon(polygon.exterior)
+    
+    tqdm.write(f"{polygon.geom_type} {polygon_path} \n{"-"*100}")
+    outer_polygon = outer_shell(polygon)
 
     max_x, min_x, max_y, min_y = shelf_to_bbox[shelf]["bbox"]
     extent_x, extent_y = max_x - min_x, max_y - min_y
@@ -133,19 +141,19 @@ for subfolder in (pbar := tqdm(subfolders, smoothing = 0, position = 0, dynamic_
     inside_mask = contains_xy(outer_polygon, X, Y)
 
     # --- Regrid original fields onto the new grid (no extrapolation) ---
-    regrid_h  = regrid_scalar(orig_h_x, orig_h_y, orig_h, X, Y, valid_data_mask)
-    regrid_vx = regrid_scalar(orig_uv_x, orig_uv_y, orig_u, X, Y, valid_data_mask)
-    regrid_vy = regrid_scalar(orig_uv_x, orig_uv_y, orig_v, X, Y, valid_data_mask)
+    regrid_h = regrid_scalar(orig_h_x,  orig_h_y,  orig_h, X, Y, valid_data_mask)
+    regrid_u = regrid_scalar(orig_uv_x, orig_uv_y, orig_u, X, Y, valid_data_mask)
+    regrid_v = regrid_scalar(orig_uv_x, orig_uv_y, orig_v, X, Y, valid_data_mask)
 
     stacked_xy = np.column_stack([X[inside_mask], Y[inside_mask]])
 
     strain_rate = network.strain_rate(stacked_xy)
     fields = network.field(stacked_xy)
 
-    mu    = to_grid(fields["mu"], inside_mask)
-    u     = to_grid(fields["u"] , inside_mask) 
-    v     = to_grid(fields["v"] , inside_mask)
-    h     = to_grid(fields["h"] , inside_mask)
+    mu    = to_grid(fields["mu"]        ,   inside_mask)
+    u     = to_grid(fields["u"]         ,   inside_mask) 
+    v     = to_grid(fields["v"]         ,   inside_mask)
+    h     = to_grid(fields["h"]         ,   inside_mask)
 
     du_dx = to_grid(strain_rate["u_x"]  ,   inside_mask)
     du_dy = to_grid(strain_rate["u_y"]  ,   inside_mask)
@@ -173,8 +181,8 @@ for subfolder in (pbar := tqdm(subfolders, smoothing = 0, position = 0, dynamic_
         data_vars=dict(
             mask      = ( ("y", "x"), valid_data_mask ),
             regrid_h  = ( ("y", "x"), regrid_h    ),
-            regrid_vx = ( ("y", "x"), regrid_vx   ),
-            regrid_vy = ( ("y", "x"), regrid_vy   ),
+            regrid_u = ( ("y", "x"), regrid_u),
+            regrid_v = ( ("y", "x"), regrid_v   ),
             mu        = ( ("y", "x"), mu          ),
             u         = ( ("y", "x"), u           ),
             v         = ( ("y", "x"), v           ),
@@ -203,7 +211,7 @@ for subfolder in (pbar := tqdm(subfolders, smoothing = 0, position = 0, dynamic_
 
     ds = ds.rio.write_crs("EPSG:3031")
     
-    zarr_path = subfolder / f"stress.zarr"
+    zarr_path = subfolder / f"evaluations.zarr"
     if zarr_path.exists(): shutil.rmtree(zarr_path)
     ds.to_zarr(zarr_path, mode="w", consolidated=False)
 
