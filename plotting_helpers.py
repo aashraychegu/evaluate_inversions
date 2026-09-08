@@ -1,7 +1,9 @@
 from pathlib import Path
 import matplotlib.pyplot as plt
 import numpy as np
-from matplotlib.colors import LogNorm
+from matplotlib.colors import SymLogNorm
+import cmocean
+from cmocean import cm
 
 def plot_field(ds, field: tuple[str], name, imgs_save_dir, save_name, pad=0.02) -> Path:
     save_path = imgs_save_dir / save_name
@@ -13,7 +15,7 @@ def plot_field(ds, field: tuple[str], name, imgs_save_dir, save_name, pad=0.02) 
     xmin, xmax = xv.min(), xv.max()
     ymin, ymax = yv.min(), yv.max()
 
-    p = da.plot.imshow(aspect=1, size=10, add_colorbar=True)
+    p = da.plot.imshow(aspect=1, size=10, add_colorbar=True, cmap = cm.thermal)
 
     dx = (xmax - xmin) * pad
     dy = (ymax - ymin) * pad
@@ -36,7 +38,7 @@ def plot_log_field(ds, field: tuple[str], name, imgs_save_dir, save_name, pad=0.
     xmin, xmax = xv.min(), xv.max()
     ymin, ymax = yv.min(), yv.max()
 
-    p = da.plot.imshow(aspect=1, size=10, add_colorbar=True, norm=LogNorm())
+    p = da.plot.imshow(aspect=1, size=10, add_colorbar=True, norm=SymLogNorm(linthresh=1),cmap = cm.dense)
 
     dx = (xmax - xmin) * pad
     dy = (ymax - ymin) * pad
@@ -81,7 +83,7 @@ def compare_fields(ds, field: tuple[str, str], name, imgs_save_dir, save_name, p
 
     # 1,1 - Predicted field (no individual colorbar)
     p1 = da_pred.plot.imshow(
-        ax=axes[0, 0], add_colorbar=False, vmin=shared_min, vmax=shared_max
+        ax=axes[0, 0], add_colorbar=False, vmin=shared_min, vmax=shared_max, cmap = cm.deep
     )
     axes[0, 0].set_title(f"Predicted: {predicted_field}")
     axes[0, 0].set_xlim(float(xmin) - dx, float(xmax) + dx)
@@ -89,7 +91,7 @@ def compare_fields(ds, field: tuple[str, str], name, imgs_save_dir, save_name, p
 
     # 1,2 - Actual field (no individual colorbar)
     p2 = da_actual.plot.imshow(
-        ax=axes[0, 1], add_colorbar=False, vmin=shared_min, vmax=shared_max
+        ax=axes[0, 1], add_colorbar=False, vmin=shared_min, vmax=shared_max, cmap = cm.tempo
     )
     axes[0, 1].set_title(f"Actual: {actual_field}")
     axes[0, 1].set_xlim(float(xmin) - dx, float(xmax) + dx)
@@ -101,7 +103,7 @@ def compare_fields(ds, field: tuple[str, str], name, imgs_save_dir, save_name, p
     # 2,1 - Difference (predicted - actual)
     diff = da_pred - da_actual
     diff_max = float(np.abs(diff).max())
-    p3 = diff.plot.imshow(ax=axes[1, 0], add_colorbar=True, cmap = "seismic", vmin = -diff_max, vmax = diff_max)
+    p3 = diff.plot.imshow(ax=axes[1, 0], add_colorbar=True, cmap = cm.balance, vmin = -diff_max, vmax = diff_max)
     axes[1, 0].set_title(f"Difference: {predicted_field} - {actual_field}")
     axes[1, 0].set_xlim(float(xmin) - dx, float(xmax) + dx)
     axes[1, 0].set_ylim(float(ymin) - dy, float(ymax) + dy)
@@ -109,7 +111,7 @@ def compare_fields(ds, field: tuple[str, str], name, imgs_save_dir, save_name, p
     # 2,2 - Relative difference ((predicted - actual)/actual)
     rel_diff = (da_pred - da_actual) / da_actual
     rel_diff_max = float(np.abs(rel_diff).max())
-    p4 = rel_diff.plot.imshow(ax=axes[1, 1], add_colorbar=True, cmap = "seismic", vmin = -rel_diff_max, vmax = rel_diff_max, robust = True)
+    p4 = rel_diff.plot.imshow(ax=axes[1, 1], add_colorbar=True, cmap = cm.balance, vmin = -rel_diff_max, vmax = rel_diff_max, robust = True)
     axes[1, 1].set_title(f"Relative Difference: ({predicted_field} - {actual_field})/{actual_field}")
     axes[1, 1].set_xlim(float(xmin) - dx, float(xmax) + dx)
     axes[1, 1].set_ylim(float(ymin) - dy, float(ymax) + dy)
@@ -153,7 +155,7 @@ def compare_speed(ds, field: tuple[str, str, str, str], name, imgs_save_dir, sav
 
     # 1,1 - Predicted speed (no individual colorbar)
     p1 = pred_speed.plot.imshow(
-        ax=axes[0, 0], add_colorbar=False, vmin=shared_min, vmax=shared_max
+        ax=axes[0, 0], add_colorbar=False, vmin=shared_min, vmax=shared_max, cmap = cm.deep
     )
     axes[0, 0].set_title(f"Predicted Speed")
     axes[0, 0].set_xlim(float(xmin) - dx, float(xmax) + dx)
@@ -161,7 +163,7 @@ def compare_speed(ds, field: tuple[str, str, str, str], name, imgs_save_dir, sav
 
     # 1,2 - Actual speed (no individual colorbar)
     p2 = actual_speed.plot.imshow(
-        ax=axes[0, 1], add_colorbar=False, vmin=shared_min, vmax=shared_max
+        ax=axes[0, 1], add_colorbar=False, vmin=shared_min, vmax=shared_max, cmap = cm.tempo
     )
     axes[0, 1].set_title(f"Actual Speed")
     axes[0, 1].set_xlim(float(xmin) - dx, float(xmax) + dx)
@@ -175,7 +177,7 @@ def compare_speed(ds, field: tuple[str, str, str, str], name, imgs_save_dir, sav
     diff_max = float(np.abs(speed_diff).max())
     p3 = speed_diff.plot.imshow(
         ax=axes[1, 0], add_colorbar=True,
-        cmap="seismic", vmin=-diff_max, vmax=diff_max,
+        cmap=cm.balance, vmin=-diff_max, vmax=diff_max,
     )
     axes[1, 0].set_title(f"Absolute Difference")
     axes[1, 0].set_xlim(float(xmin) - dx, float(xmax) + dx)
@@ -186,7 +188,7 @@ def compare_speed(ds, field: tuple[str, str, str, str], name, imgs_save_dir, sav
     rel_max = float(np.abs(speed_rel_diff).max())
     p4 = speed_rel_diff.plot.imshow(
         ax=axes[1, 1], add_colorbar=True,
-        cmap="seismic", vmin=-rel_max, vmax=rel_max,
+        cmap=cm.balance, vmin=-rel_max, vmax=rel_max,
     )
     axes[1, 1].set_title(f"Relative Difference")
     axes[1, 1].set_xlim(float(xmin) - dx, float(xmax) + dx)
@@ -220,13 +222,13 @@ def plot_side_by_side(ds, field: tuple[str, str], name, imgs_save_dir, save_name
     dy = (ymax - ymin) * pad
 
     # Plot first field
-    p1 = da_first.plot.imshow(ax=axes[0],  add_colorbar=True, norm=(LogNorm() if log_first else None))
+    p1 = da_first.plot.imshow(ax=axes[0],  add_colorbar=True, norm=(SymLogNorm(linthresh=1) if log_first else None), cmap = cm.diff)
     axes[0].set_title(first_field)
     axes[0].set_xlim(float(xmin) - dx, float(xmax) + dx)
     axes[0].set_ylim(float(ymin) - dy, float(ymax) + dy)
 
     # Plot second field
-    p2 = da_second.plot.imshow(ax=axes[1],  add_colorbar=True, norm=(LogNorm() if log_second else None))
+    p2 = da_second.plot.imshow(ax=axes[1],  add_colorbar=True, norm=(SymLogNorm(linthresh=1) if log_second else None), cmap = cm.diff)
     axes[1].set_title(second_field)
     axes[1].set_xlim(float(xmin) - dx, float(xmax) + dx)
     axes[1].set_ylim(float(ymin) - dy, float(ymax) + dy)

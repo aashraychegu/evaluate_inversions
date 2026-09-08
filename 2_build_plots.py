@@ -30,7 +30,6 @@ folder = Path(parser.parse_args().folder)
 
 subfolders = sorted(list(folder.glob("*/")))
 
-
 plot_vars = [
     Plot(
         function=compare_fields, 
@@ -154,4 +153,4 @@ for subfolder in (pbar := tqdm(subfolders, smoothing = 0, position = 0, dynamic_
     for plot_spec in (pbar2:= tqdm(plot_vars)):
         pbar2.set_description(f"Plotting: {plot_spec.label} ")
         save_path, spec_str = plot_spec(ds, subfolder.name, img_dir)
-        tqdm.write(f"Saved {spec_str} to {save_path}")
+        # tqdm.write(f"Saved {spec_str} to {save_path}")

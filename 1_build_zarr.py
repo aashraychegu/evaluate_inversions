@@ -150,19 +150,19 @@ for subfolder in (pbar := tqdm(subfolders, smoothing = 0, position = 0, dynamic_
     strain_rate = network.strain_rate(stacked_xy)
     fields = network.field(stacked_xy)
 
-    mu    = to_grid(fields["mu"]        ,   inside_mask)
-    u     = to_grid(fields["u"]         ,   inside_mask) 
-    v     = to_grid(fields["v"]         ,   inside_mask)
-    h     = to_grid(fields["h"]         ,   inside_mask)
-
-    du_dx = to_grid(strain_rate["u_x"]  ,   inside_mask)
-    du_dy = to_grid(strain_rate["u_y"]  ,   inside_mask)
-    dv_dx = to_grid(strain_rate["v_x"]  ,   inside_mask)
-    dv_dy = to_grid(strain_rate["v_y"]  ,   inside_mask)
-    e_eff = to_grid(strain_rate["e_eff"],   inside_mask)
-    e_xx  = to_grid(strain_rate["exx"]  ,   inside_mask)
-    e_xy  = to_grid(strain_rate["exy"]  ,   inside_mask)
-    e_yy  = to_grid(strain_rate["eyy"]  ,   inside_mask)
+    mu    = to_grid(fields["mu"]         , inside_mask)
+    u     = to_grid(fields["u"]          , inside_mask) 
+    v     = to_grid(fields["v"]          , inside_mask)
+    h     = to_grid(fields["h"]          , inside_mask)
+ 
+    du_dx = to_grid(strain_rate["u_x"]   , inside_mask)
+    du_dy = to_grid(strain_rate["u_y"]   , inside_mask)
+    dv_dx = to_grid(strain_rate["v_x"]   , inside_mask)
+    dv_dy = to_grid(strain_rate["v_y"]   , inside_mask)
+    e_eff = to_grid(strain_rate["e_eff"] , inside_mask)
+    e_xx  = to_grid(strain_rate["exx"]   , inside_mask)
+    e_xy  = to_grid(strain_rate["exy"]   , inside_mask)
+    e_yy  = to_grid(strain_rate["eyy"]   , inside_mask)
 
     tau_xx = 2 * mu * e_xx
     tau_xy = 2 * mu * e_xy
@@ -179,29 +179,29 @@ for subfolder in (pbar := tqdm(subfolders, smoothing = 0, position = 0, dynamic_
 
     ds = xr.Dataset(
         data_vars=dict(
-            mask      = ( ("y", "x"), valid_data_mask ),
-            regrid_h  = ( ("y", "x"), regrid_h    ),
-            regrid_u = ( ("y", "x"), regrid_u),
-            regrid_v = ( ("y", "x"), regrid_v   ),
-            mu        = ( ("y", "x"), mu          ),
-            u         = ( ("y", "x"), u           ),
-            v         = ( ("y", "x"), v           ),
-            h         = ( ("y", "x"), h           ),
-            du_dx     = ( ("y", "x"), du_dx       ),
-            du_dy     = ( ("y", "x"), du_dy       ),
-            dv_dx     = ( ("y", "x"), dv_dx       ),
-            dv_dy     = ( ("y", "x"), dv_dy       ),
-            e_eff     = ( ("y", "x"), e_eff       ),
-            e_xx      = ( ("y", "x"), e_xx        ),
-            e_xy      = ( ("y", "x"), e_xy        ),
-            e_yy      = ( ("y", "x"), e_yy        ),
-            tau_eff   = ( ("y", "x"), tau_eff     ),
-            tau_xx    = ( ("y", "x"), tau_xx      ),
-            tau_xy    = ( ("y", "x"), tau_xy      ),
-            tau_yy    = ( ("y", "x"), tau_yy      ),
-            tau_1     = ( ("y", "x"), tau_1       ),
-            tau_2     = ( ("y", "x"), tau_2       ),
-            R_xx      = ( ("y", "x"), R_xx        ),
+            mask      = ( ("y", "x"), valid_data_mask   ),
+            regrid_h  = ( ("y", "x"), regrid_h          ),
+            regrid_u  = ( ("y", "x"), regrid_u          ),
+            regrid_v  = ( ("y", "x"), regrid_v          ),
+            mu        = ( ("y", "x"), mu                ),
+            u         = ( ("y", "x"), u                 ),
+            v         = ( ("y", "x"), v                 ),
+            h         = ( ("y", "x"), h                 ),
+            du_dx     = ( ("y", "x"), du_dx             ),
+            du_dy     = ( ("y", "x"), du_dy             ),
+            dv_dx     = ( ("y", "x"), dv_dx             ),
+            dv_dy     = ( ("y", "x"), dv_dy             ),
+            e_eff     = ( ("y", "x"), e_eff             ),
+            e_xx      = ( ("y", "x"), e_xx              ),
+            e_xy      = ( ("y", "x"), e_xy              ),
+            e_yy      = ( ("y", "x"), e_yy              ),
+            tau_eff   = ( ("y", "x"), tau_eff           ),
+            tau_xx    = ( ("y", "x"), tau_xx            ),
+            tau_xy    = ( ("y", "x"), tau_xy            ),
+            tau_yy    = ( ("y", "x"), tau_yy            ),
+            tau_1     = ( ("y", "x"), tau_1             ),
+            tau_2     = ( ("y", "x"), tau_2             ),
+            R_xx      = ( ("y", "x"), R_xx              ),
         ),  
         coords=dict(
             x=("x", x),
