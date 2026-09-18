@@ -1,0 +1,45 @@
+[comparisons."Patched Velocity Over Time   - HiTh"]
+list = [
+  "Ross__patched_velocity_1995-2001__thickness_1995-2001",
+  "Ross__patched_velocity_2007-2009__thickness_2007-2009",
+  "Ross__patched_velocity_2014-2017__thickness_2014-2017",
+  "Ross__patched_velocity_2020-2022__interp_thickness_2020-2022",
+]
+
+[comparisons."Unpatched Velocity Over Time - HiTh"]
+list = [
+  "Ross__velocity_1995-2001__thickness_1995-2001",
+  "Ross__velocity_2007-2009__thickness_2007-2009",
+  "Ross__velocity_2014-2017__thickness_2014-2017",
+  "Ross__velocity_2020-2022__interp_thickness_2020-2022",
+]
+
+[comparisons."Patched Velocity Over Time   - BMa4"]
+list = [
+  "Ross__patched_velocity_1995-2001__thickness_bm4",
+  "Ross__patched_velocity_2007-2009__thickness_bm4",
+  "Ross__patched_velocity_2014-2017__thickness_bm4",
+  "Ross__patched_velocity_2020-2022__thickness_bm4",
+]
+
+[comparisons."Unpatched Velocity Over Time - BMa4"]
+list = [
+  "Ross__velocity_1995-2001__thickness_bm4",
+  "Ross__velocity_2007-2009__thickness_bm4",
+  "Ross__velocity_2014-2017__thickness_bm4",
+  "Ross__velocity_2020-2022__thickness_bm4",
+]
+
+[comparisons."Patched Velocity Over Time   - BMp3"]
+list = [
+  "Ross__patched_velocity_1995-2001__thickness_bm4",
+  "Ross__patched_velocity_2007-2009__thickness_bm4",
+  "Ross__patched_velocity_2014-2017__thickness_bm4",
+]
+
+[comparisons."Unpatched Velocity Over Time - BMp3"]
+list = [
+  "Ross__velocity_1995-2001__thickness_bm4",
+  "Ross__velocity_2007-2009__thickness_bm4",
+  "Ross__velocity_2014-2017__thickness_bm4",
+]

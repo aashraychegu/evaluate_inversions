@@ -4,6 +4,7 @@ import rioxarray as rxr
 from argparse import ArgumentParser
 import tomllib
 import shutil
+import numpy as np
 from tqdm import tqdm
 
 parser = ArgumentParser()
@@ -20,17 +21,17 @@ output_dir.mkdir(exist_ok = True)
 config = tomllib.loads(config_path.read_text())
 comparisons = config["comparisons"]
 
-for label, zarrs in tqdm(comparisons.items(),smoothing = 0, position = 1,):
+for label, zarrs in tqdm(comparisons.items(), smoothing=0, position=1,):
     first_path = folder / zarrs["minuend"] / "evaluations.zarr"
     second_path = folder / zarrs["subtrahend"] / "evaluations.zarr"
 
-    first_zarr = xr.open_zarr(first_path,consolidated=False)
-    second_zarr = xr.open_zarr(second_path,consolidated=False)
+    first_zarr = xr.open_zarr(first_path, consolidated=False)
+    second_zarr = xr.open_zarr(second_path, consolidated=False)
 
     first_aligned, second_aligned = xr.align(first_zarr, second_zarr, join="inner")
 
     data_vars = {}
-    for data_var in tqdm(list(first_zarr.data_vars),smoothing = 0, position = 0,):
+    for data_var in tqdm(list(first_zarr.data_vars), smoothing=0, position=0,):
         if data_var not in second_zarr.data_vars:
             continue
 
@@ -43,6 +44,9 @@ for label, zarrs in tqdm(comparisons.items(),smoothing = 0, position = 1,):
         else:
             diff = minuend - subtrahend
             data_vars[data_var] = diff
+
+        if data_var == "mu":
+            data_vars["log(delta mu)"] = np.log(minuend) - np.log(subtrahend)
 
     ds = xr.Dataset(
         data_vars=data_vars,

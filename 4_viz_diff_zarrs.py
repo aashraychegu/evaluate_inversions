@@ -7,7 +7,8 @@ import tomllib
 import shutil
 from tqdm import tqdm
 from functools import partial
-from plotting_helpers import Plot, plot_field, plot_log_field, compare_fields, compare_speed, plot_side_by_side, plot_stress_to_strain_rate, histogram
+from plotting_helpers import Plot, plot_field, plot_field, compare_fields, compare_speed, plot_side_by_side, plot_stress_to_strain_rate, histogram
+
 plot_vars = [
     Plot(
         function=compare_fields, 
@@ -30,89 +31,89 @@ plot_vars = [
         label="Speed Difference",
     ),
     Plot(
-        function=partial(plot_side_by_side,log_first = True, log_second = True),
+        function=partial(plot_side_by_side, log_first = True, log_second = True, diff = True),
         field=("e_eff","mu"),
-        label="Log Effective Strain Rate and Log Viscosity",
+        label="Log Effective Strain Rate and Diff Log Viscosity",
     ),
     Plot(
-        function=plot_field,
+        function=partial(plot_side_by_side, log_first = True, log_second = True, diff = True),
+        field=("e_eff", "log(delta mu)"),
+        label="Log Effective Strain Rate and Log Diff Viscosity",
+    ),
+    Plot(
+        function=partial(plot_field,diff = True),
         field="mu",
         label="Viscosity",
     ),
     Plot(
-        function=plot_log_field,
+        function=partial(plot_field,diff = True),
         field="mu",
-        label="Log Viscosity",
+        label="Diff Log Viscosity",
     ),
     Plot(
-        function=plot_field,
+        function=partial(plot_field,diff = True),
+        field="log(delta mu)",
+        label="Log Diff Viscosity",
+    ),
+    Plot(
+        function=partial(plot_field,diff = True),
         field="e_eff",
         label="Effective Strain Rate",
     ),
     Plot(
-        function=plot_log_field,
+        function=partial(plot_field,diff = True),
         field="e_eff",
         label="Log Effective Strain Rate",
     ),
     Plot(
-        function=plot_field,
+        function=partial(plot_field,diff = True),
         field="e_xx",
         label="Strain Rate XX Component",
     ),
     Plot(
-        function=plot_field,
+        function=partial(plot_field,diff = True),
         field="e_xy",
         label="Strain Rate XY Component",
     ),
     Plot(
-        function=plot_field,
+        function=partial(plot_field,diff = True),
         field="e_yy",
         label="Strain YY Component",
     ),
     Plot(
-        function=plot_field,
+        function=partial(plot_field,diff = True),
         field="tau_eff",
         label="Effective Stress",
     ),
     Plot(
-        function=plot_field,
+        function=partial(plot_field,diff = True),
         field="tau_xx",
         label="Stress XX Component",
     ),
     Plot(
-        function=plot_field,
+        function=partial(plot_field,diff = True),
         field="tau_xy",
         label="Stress XY Component",
     ),
     Plot(
-        function=plot_field,
+        function=partial(plot_field,diff = True),
         field="tau_yy",
         label="Stress YY Component",
     ),
     Plot(
-        function=plot_field,
+        function=partial(plot_field,diff = True),
         field="tau_1",
         label="Stress Primary Component",
     ),
     Plot(
-        function=plot_field,
+        function=partial(plot_field,diff = True),
         field="tau_2",
         label="Stress Secondary Component",
     ),
     Plot(
-        function=plot_field,
+        function=partial(plot_field,diff = True),
         field="R_xx",
         label="Extensional Stress (R_xx)",
-    ),
-    Plot(
-        function = histogram,
-        field = "e_eff",
-        label = "Histogram of Stress"
-    ),
-    Plot(
-        function=plot_stress_to_strain_rate,
-        field=( "tau_eff", "e_eff"),
-        label="Effective Stress to Effective Strain",
     ),
 ]
 
@@ -122,13 +123,14 @@ args = parser.parse_args()
 
 folder_path = Path(args.folder)
 
-for subfolder_path in folder_path.glob("*/"):
+for idx, subfolder_path in (pbar1 := tqdm(list(enumerate(folder_path.glob("*/"))),smoothing = 0, position = 1)):
+    pbar1.set_description(f"{idx}: {subfolder_path.name}")
     zarr_path = subfolder_path / "diff.zarr"
     zarr = xr.open_zarr(zarr_path,consolidated=False)
     image_path = subfolder_path / "images"
     image_path.mkdir(exist_ok = True)
 
-    for plot_spec in (pbar2:= tqdm(plot_vars)):
+    for plot_spec in (pbar2:= tqdm(plot_vars,smoothing = 0, position = 0)):
         pbar2.set_description(f"Plotting: {plot_spec.label} ")
         save_path, spec_str = plot_spec(zarr, subfolder_path.name, image_path)
         # tqdm.write(f"Saved {spec_str} to {save_path}")

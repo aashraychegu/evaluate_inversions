@@ -6,6 +6,7 @@ from pprint import pprint
 import xarray as xr
 from plotting_helpers import Plot
 from triangle_plotting_helpers import plot_field, plot_log_field
+from tqdm import tqdm
 
 plot_vars = [
     Plot(
@@ -117,13 +118,15 @@ filtered_comparisons = {key:value for key,value in filtered_comparisons.items() 
 output_folder = comparison_folder / folder.name
 output_folder.mkdir(exist_ok = True)
 
-for label, plot_list in filtered_comparisons.items():
+for label, plot_list in (pbar1:=tqdm(list(filtered_comparisons.items()),smoothing = 0, position = 0)):
+    pbar1.set_description(f"{label}")
     save_folder = output_folder / label
     save_folder.mkdir(exist_ok = True)
 
-    for plot in plot_list:
+    for plot in tqdm(plot_list,smoothing = 0, position = 1,desc = "Loading Zarrs"):
         plot["zarr"] = xr.open_zarr( folder / plot["name"] / f"diff.zarr", consolidated = False)
 
-    for plot in plot_vars:
+    for plot in (pbar2:=tqdm(plot_vars, smoothing = 0, position = 1, desc = "Building Plots")):
         save_path, description = plot(plot_list, name = label, imgs_save_dir = save_folder)
-        print(description, save_path)
+        pbar2.set_description(description)
+        

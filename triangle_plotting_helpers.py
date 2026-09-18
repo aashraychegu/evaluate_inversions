@@ -75,7 +75,7 @@ def draw_triangle_plot(plot_info, x_max, y_max, name, save_path, pad,
 def plot_field(ds, field: tuple[str], name, imgs_save_dir, save_name, pad=0.02) -> Path:
     save_path = imgs_save_dir / save_name
     plot_info, x_max, y_max = get_plot_info(ds, field)
-    print("  maxes:", x_max, y_max)
+    # tqdm.write("  maxes:", x_max, y_max)
     all_vals = np.concatenate([info["data"].values.ravel() for info in plot_info])
     vmax = np.nanmax(np.abs(all_vals))
     norm = plt.Normalize(vmin=-vmax, vmax=vmax)

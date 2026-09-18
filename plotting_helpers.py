@@ -5,7 +5,7 @@ from matplotlib.colors import SymLogNorm
 import cmocean
 from cmocean import cm
 
-def plot_field(ds, field: tuple[str], name, imgs_save_dir, save_name, pad=0.02) -> Path:
+def plot_field(ds, field: tuple[str], name, imgs_save_dir, save_name, pad=0.02, diff = False) -> Path:
     save_path = imgs_save_dir / save_name
     data_field = field
     da = ds[data_field]
@@ -15,7 +15,11 @@ def plot_field(ds, field: tuple[str], name, imgs_save_dir, save_name, pad=0.02) 
     xmin, xmax = xv.min(), xv.max()
     ymin, ymax = yv.min(), yv.max()
 
-    p = da.plot.imshow(aspect=1, size=10, add_colorbar=True, cmap = cm.thermal)
+    internal_cmap = cm.thermal
+    if diff:
+        internal_cmap = cm.curl
+
+    p = da.plot.imshow(aspect=1, size=10, add_colorbar=True, cmap = internal_cmap)
 
     dx = (xmax - xmin) * pad
     dy = (ymax - ymin) * pad
@@ -28,7 +32,7 @@ def plot_field(ds, field: tuple[str], name, imgs_save_dir, save_name, pad=0.02) 
     plt.close()
     return save_path
 
-def plot_log_field(ds, field: tuple[str], name, imgs_save_dir, save_name, pad=0.02) -> Path:
+def plot_log_field(ds, field: tuple[str], name, imgs_save_dir, save_name, pad=0.02, diff = False) -> Path:
     save_path = imgs_save_dir / save_name
     data_field = field
     da = ds[data_field]
@@ -38,7 +42,11 @@ def plot_log_field(ds, field: tuple[str], name, imgs_save_dir, save_name, pad=0.
     xmin, xmax = xv.min(), xv.max()
     ymin, ymax = yv.min(), yv.max()
 
-    p = da.plot.imshow(aspect=1, size=10, add_colorbar=True, norm=SymLogNorm(linthresh=1),cmap = cm.dense)
+    internal_cmap = cm.dense
+    if diff:
+        internal_cmap = cm.delta
+
+    p = da.plot.imshow(aspect=1, size=10, add_colorbar=True, norm=SymLogNorm(linthresh=1),cmap = internal_cmap)
 
     dx = (xmax - xmin) * pad
     dy = (ymax - ymin) * pad
@@ -51,7 +59,7 @@ def plot_log_field(ds, field: tuple[str], name, imgs_save_dir, save_name, pad=0.
     plt.close()
     return save_path
 
-def compare_fields(ds, field: tuple[str, str], name, imgs_save_dir, save_name, pad=0.02) -> Path:
+def compare_fields(ds, field: tuple[str, str], name, imgs_save_dir, save_name, pad=0.02, diff = False) -> Path:
     save_path = imgs_save_dir / save_name
     predicted_field, actual_field = field
 
@@ -83,7 +91,7 @@ def compare_fields(ds, field: tuple[str, str], name, imgs_save_dir, save_name, p
 
     # 1,1 - Predicted field (no individual colorbar)
     p1 = da_pred.plot.imshow(
-        ax=axes[0, 0], add_colorbar=False, vmin=shared_min, vmax=shared_max, cmap = cm.deep
+        ax=axes[0, 0], add_colorbar=False, vmin=shared_min, vmax=shared_max, cmap = cm.thermal
     )
     axes[0, 0].set_title(f"Predicted: {predicted_field}")
     axes[0, 0].set_xlim(float(xmin) - dx, float(xmax) + dx)
@@ -91,7 +99,7 @@ def compare_fields(ds, field: tuple[str, str], name, imgs_save_dir, save_name, p
 
     # 1,2 - Actual field (no individual colorbar)
     p2 = da_actual.plot.imshow(
-        ax=axes[0, 1], add_colorbar=False, vmin=shared_min, vmax=shared_max, cmap = cm.tempo
+        ax=axes[0, 1], add_colorbar=False, vmin=shared_min, vmax=shared_max, cmap = cm.haline
     )
     axes[0, 1].set_title(f"Actual: {actual_field}")
     axes[0, 1].set_xlim(float(xmin) - dx, float(xmax) + dx)
@@ -121,7 +129,7 @@ def compare_fields(ds, field: tuple[str, str], name, imgs_save_dir, save_name, p
     plt.close()
     return save_path
 
-def compare_speed(ds, field: tuple[str, str, str, str], name, imgs_save_dir, save_name, pad=0.02) -> Path:
+def compare_speed(ds, field: tuple[str, str, str, str], name, imgs_save_dir, save_name, pad=0.02, diff = False) -> Path:
     save_path = imgs_save_dir / save_name
     predicted_x_field, predicted_y_field, actual_x_field, actual_y_field = field
 
@@ -155,7 +163,7 @@ def compare_speed(ds, field: tuple[str, str, str, str], name, imgs_save_dir, sav
 
     # 1,1 - Predicted speed (no individual colorbar)
     p1 = pred_speed.plot.imshow(
-        ax=axes[0, 0], add_colorbar=False, vmin=shared_min, vmax=shared_max, cmap = cm.deep
+        ax=axes[0, 0], add_colorbar=False, vmin=shared_min, vmax=shared_max, cmap = cm.thermal
     )
     axes[0, 0].set_title(f"Predicted Speed")
     axes[0, 0].set_xlim(float(xmin) - dx, float(xmax) + dx)
@@ -163,7 +171,7 @@ def compare_speed(ds, field: tuple[str, str, str, str], name, imgs_save_dir, sav
 
     # 1,2 - Actual speed (no individual colorbar)
     p2 = actual_speed.plot.imshow(
-        ax=axes[0, 1], add_colorbar=False, vmin=shared_min, vmax=shared_max, cmap = cm.tempo
+        ax=axes[0, 1], add_colorbar=False, vmin=shared_min, vmax=shared_max, cmap = cm.haline
     )
     axes[0, 1].set_title(f"Actual Speed")
     axes[0, 1].set_xlim(float(xmin) - dx, float(xmax) + dx)
@@ -199,7 +207,7 @@ def compare_speed(ds, field: tuple[str, str, str, str], name, imgs_save_dir, sav
     plt.close()
     return save_path
 
-def plot_side_by_side(ds, field: tuple[str, str], name, imgs_save_dir, save_name, pad=0.02, log_first = False, log_second = False, ) -> Path:
+def plot_side_by_side(ds, field: tuple[str, str], name, imgs_save_dir, save_name, pad=0.02, diff = False, log_first = False, log_second = False, ) -> Path:
     save_path = imgs_save_dir / save_name
     first_field, second_field = field
 
@@ -221,14 +229,18 @@ def plot_side_by_side(ds, field: tuple[str, str], name, imgs_save_dir, save_name
     dx = (xmax - xmin) * pad
     dy = (ymax - ymin) * pad
 
+    internal_cmap = cm.haline
+    if diff:
+        internal_cmap = cm.diff 
+
     # Plot first field
-    p1 = da_first.plot.imshow(ax=axes[0],  add_colorbar=True, norm=(SymLogNorm(linthresh=1) if log_first else None), cmap = cm.diff)
+    p1 = da_first.plot.imshow(ax=axes[0],  add_colorbar=True, norm=(SymLogNorm(linthresh=1) if log_first else None), cmap = internal_cmap)
     axes[0].set_title(first_field)
     axes[0].set_xlim(float(xmin) - dx, float(xmax) + dx)
     axes[0].set_ylim(float(ymin) - dy, float(ymax) + dy)
 
     # Plot second field
-    p2 = da_second.plot.imshow(ax=axes[1],  add_colorbar=True, norm=(SymLogNorm(linthresh=1) if log_second else None), cmap = cm.diff)
+    p2 = da_second.plot.imshow(ax=axes[1],  add_colorbar=True, norm=(SymLogNorm(linthresh=1) if log_second else None), cmap = internal_cmap)
     axes[1].set_title(second_field)
     axes[1].set_xlim(float(xmin) - dx, float(xmax) + dx)
     axes[1].set_ylim(float(ymin) - dy, float(ymax) + dy)
@@ -239,7 +251,7 @@ def plot_side_by_side(ds, field: tuple[str, str], name, imgs_save_dir, save_name
     plt.close()
     return save_path
 
-def histogram(ds, field: tuple[str], name, imgs_save_dir, save_name, pad=0.02, log_x=True) -> Path:
+def histogram(ds, field: tuple[str], name, imgs_save_dir, save_name, pad=0.02, diff = False, log_x=False) -> Path:
     save_path = imgs_save_dir / save_name
     data_field = field
     da = ds[data_field]
@@ -251,10 +263,10 @@ def histogram(ds, field: tuple[str], name, imgs_save_dir, save_name, pad=0.02, l
     # Flatten data and remove NaN values
     values = da.values.flatten()
     values = values[~np.isnan(values)]
-    values = values[values > 0]  # Remove non-positive values for log x-axis
-
+        
     # Common bin edges
     if log_x:
+        values = values[values > 0]  # Remove non-positive values for log x-axis
         bins = np.logspace(np.log10(values.min()), np.log10(values.max()), 50)
     else:
         bins = 50
@@ -281,7 +293,7 @@ def histogram(ds, field: tuple[str], name, imgs_save_dir, save_name, pad=0.02, l
     plt.close()
     return save_path
 
-def plot_stress_to_strain_rate(ds, field: tuple[str, str], name, imgs_save_dir, save_name, pad=0.02) -> Path:
+def plot_stress_to_strain_rate(ds, field: tuple[str, str], name, imgs_save_dir, save_name, pad=0.02, diff = False) -> Path:
     save_path = imgs_save_dir / save_name
     stress_field, strain_rate_field = field
 
@@ -295,18 +307,60 @@ def plot_stress_to_strain_rate(ds, field: tuple[str, str], name, imgs_save_dir, 
     fig, axes = plt.subplots(2, 1, figsize=(10, 12))
     fig.suptitle(f"{name}: {stress_field} vs {strain_rate_field}", fontsize=12)
 
+    # --- Linear scale plot ---
     axes[0].scatter(strain_rate_vals, stress_vals, s=10, alpha=0.5)
+
+    # Linear fit: stress = m * strain_rate + b
+    lin_title = "Linear Scale"
+    lin_mask = np.isfinite(strain_rate_vals) & np.isfinite(stress_vals)
+    if lin_mask.sum() >= 2:
+        x = strain_rate_vals[lin_mask]
+        y = stress_vals[lin_mask]
+        m, b = np.polyfit(x, y, 1)
+        y_pred = m * x + b
+        ss_res = np.sum((y - y_pred) ** 2)
+        ss_tot = np.sum((y - y.mean()) ** 2)
+        r2 = 1 - ss_res / ss_tot if ss_tot > 0 else np.nan
+        x_line = np.linspace(x.min(), x.max(), 100)
+        axes[0].plot(x_line, m * x_line + b, color="red", lw=2,
+                     label=f"fit: y = {m:.3g}x + {b:.3g}")
+        axes[0].legend()
+        lin_title = f"Linear Scale (R² = {r2:.3f})"
+
     axes[0].set_xlabel(strain_rate_field)
     axes[0].set_ylabel(stress_field)
-    axes[0].set_title("Linear Scale")
+    axes[0].set_title(lin_title)
     axes[0].grid(True, which="both", ls="--")
 
+    # --- Log-Log scale plot ---
     axes[1].scatter(strain_rate_vals, stress_vals, s=10, alpha=0.5)
     axes[1].set_xscale('log')
     axes[1].set_yscale('log')
+
+    # Power-law fit in log space: log(stress) = n * log(strain_rate) + log(A)
+    log_title = "Log-Log Scale"
+    log_mask = (
+        np.isfinite(strain_rate_vals) & np.isfinite(stress_vals)
+        & (strain_rate_vals > 0) & (stress_vals > 0)
+    )
+    if log_mask.sum() >= 2:
+        log_x = np.log10(strain_rate_vals[log_mask])
+        log_y = np.log10(stress_vals[log_mask])
+        n, log_A = np.polyfit(log_x, log_y, 1)
+        log_y_pred = n * log_x + log_A
+        ss_res = np.sum((log_y - log_y_pred) ** 2)
+        ss_tot = np.sum((log_y - log_y.mean()) ** 2)
+        r2_log = 1 - ss_res / ss_tot if ss_tot > 0 else np.nan
+        x_fit = np.logspace(log_x.min(), log_x.max(), 100)
+        y_fit = 10 ** log_A * x_fit ** n
+        axes[1].plot(x_fit, y_fit, color="red", lw=2,
+                     label=f"fit: y = {10**log_A:.3g} · x^{n:.3g}")
+        axes[1].legend()
+        log_title = f"Log-Log Scale (R² = {r2_log:.3f})"
+
     axes[1].set_xlabel(f"{strain_rate_field} (log scale)")
     axes[1].set_ylabel(f"{stress_field} (log scale)")
-    axes[1].set_title("Log-Log Scale")
+    axes[1].set_title(log_title)
     axes[1].grid(True, which="both", ls="--")
 
     plt.tight_layout()

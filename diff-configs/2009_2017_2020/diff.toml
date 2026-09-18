@@ -1,0 +1,35 @@
+[comparisons."2009 and cleaned thickness 2009"]
+minuend = "PineIsland__smoothed-2007-2009_2009-09-15_velocity__smoothed-2007-2009_2009-09-15_thickness"
+subtrahend = "PineIsland__cleaned-2007-2009_2009-09-15_velocity__cleaned-2007-2009_2009-09-15_thickness"
+
+[comparisons."2017-08 minus 2009"]
+minuend = "PineIsland__2017-08-15_velocity__2017-08-15_thickness"
+subtrahend = "PineIsland__smoothed-2007-2009_2009-09-15_velocity__smoothed-2007-2009_2009-09-15_thickness"
+
+[comparisons."2017-11 minus 2009"]
+minuend = "PineIsland__2017-11-15_velocity__2017-11-15_thickness"
+subtrahend = "PineIsland__smoothed-2007-2009_2009-09-15_velocity__smoothed-2007-2009_2009-09-15_thickness"
+
+[comparisons."2020 minus 2009"]
+minuend = "PineIsland__2020-05-16_velocity__2020-05-16_thickness"
+subtrahend = "PineIsland__smoothed-2007-2009_2009-09-15_velocity__smoothed-2007-2009_2009-09-15_thickness"
+
+[comparisons."2017-08 minus cleaned 2009"]
+minuend = "PineIsland__2017-08-15_velocity__2017-08-15_thickness"
+subtrahend = "PineIsland__cleaned-2007-2009_2009-09-15_velocity__cleaned-2007-2009_2009-09-15_thickness"
+
+[comparisons."2017-11 minus cleaned 2009"]
+minuend = "PineIsland__2017-11-15_velocity__2017-11-15_thickness"
+subtrahend = "PineIsland__cleaned-2007-2009_2009-09-15_velocity__cleaned-2007-2009_2009-09-15_thickness"
+
+[comparisons."2020 minus cleaned 2009"]
+minuend = "PineIsland__2020-05-16_velocity__2020-05-16_thickness"
+subtrahend = "PineIsland__cleaned-2007-2009_2009-09-15_velocity__cleaned-2007-2009_2009-09-15_thickness"
+
+[comparisons."2020 minus 2017-08"]
+minuend = "PineIsland__2020-05-16_velocity__2020-05-16_thickness"
+subtrahend = "PineIsland__2017-08-15_velocity__2017-08-15_thickness"
+
+[comparisons."2020 minus 2017-11"]
+minuend = "PineIsland__2020-05-16_velocity__2020-05-16_thickness"
+subtrahend = "PineIsland__2017-11-15_velocity__2017-11-15_thickness"
