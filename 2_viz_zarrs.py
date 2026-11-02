@@ -32,109 +32,130 @@ subfolders = sorted(list(folder.glob("*/")))
 
 plot_vars = [
     Plot(
-        function=compare_fields, 
-        field=("h", "regrid_h"), 
-        label="Thickness Difference"
+        function=compare_fields,
+        field=("h", "regrid_h"),
+        label="Thickness Difference",
+        latex=("$h$", r"$h_{regrid}$"),
     ),
     Plot(
-        function=compare_fields, 
-        field=("u", "regrid_u"), 
-        label="X Velocity Difference"
+        function=compare_fields,
+        field=("u", "regrid_u"),
+        label="X Velocity Difference",
+        latex=("$u$", r"$u_{regrid}$"),  
     ),
     Plot(
-        function=compare_fields, 
-        field=("v", "regrid_v"), 
-        label="Y Velocity Difference"
+        function=compare_fields,
+        field=("v", "regrid_v"),
+        label="Y Velocity Difference",
+        latex=("$v$", r"$v_{regrid}$"),
     ),
     Plot(
         function=compare_speed,
         field=("u", "v", "regrid_u", "regrid_v"),
         label="Speed Difference",
+        latex=("$u$", "$v$", r"$u_{regrid}$", r"$v_{regrid}$"),  
     ),
     Plot(
-        function=partial(plot_side_by_side,log_first = True, log_second = True),
-        field=("e_eff","mu"),
+        function=partial(plot_side_by_side, log_first=True, log_second=True),
+        field=("e_eff", "mu"),
         label="Log Effective Strain Rate and Log Viscosity",
+        latex=(r"$\dot{\epsilon}_{eff}$", r"$\mu$"),
     ),
     Plot(
         function=plot_field,
         field="mu",
         label="Viscosity",
+        latex=r"$\mu$",
     ),
     Plot(
         function=plot_log_field,
         field="mu",
         label="Log Viscosity",
+        latex=r"$\mu$",
     ),
     Plot(
         function=plot_field,
         field="e_eff",
         label="Effective Strain Rate",
+        latex=r"$\dot{\epsilon}_{eff}$",
     ),
     Plot(
         function=plot_log_field,
         field="e_eff",
         label="Log Effective Strain Rate",
+        latex=r"$\dot{\epsilon}_{eff}$",
     ),
     Plot(
         function=plot_field,
         field="e_xx",
         label="Strain Rate XX Component",
+        latex=r"$\dot{\epsilon}_{xx}$",
     ),
     Plot(
         function=plot_field,
         field="e_xy",
         label="Strain Rate XY Component",
+        latex=r"$\dot{\epsilon}_{xy}$",
     ),
     Plot(
         function=plot_field,
         field="e_yy",
-        label="Strain YY Component",
+        label="Strain Rate YY Component",  
+        latex=r"$\dot{\epsilon}_{yy}$",
     ),
     Plot(
         function=plot_field,
         field="tau_eff",
         label="Effective Stress",
+        latex=r"$\tau_{eff}$",
     ),
     Plot(
         function=plot_field,
         field="tau_xx",
         label="Stress XX Component",
+        latex=r"$\tau_{xx}$",
     ),
     Plot(
         function=plot_field,
         field="tau_xy",
         label="Stress XY Component",
+        latex=r"$\tau_{xy}$",
     ),
     Plot(
         function=plot_field,
         field="tau_yy",
         label="Stress YY Component",
+        latex=r"$\tau_{yy}$",
     ),
     Plot(
         function=plot_field,
         field="tau_1",
         label="Stress Primary Component",
+        latex=r"$\tau_{1}$",
     ),
     Plot(
         function=plot_field,
         field="tau_2",
         label="Stress Secondary Component",
+        latex=r"$\tau_{2}$",
     ),
     Plot(
         function=plot_field,
         field="R_xx",
         label="Extensional Stress (R_xx)",
+        latex=r"$R_{xx}$",
     ),
     Plot(
-        function = histogram,
-        field = "e_eff",
-        label = "Histogram of Stress"
+        function=histogram,
+        field="e_eff",
+        label="Histogram of Effective Strain Rate", 
+        latex=r"$\dot{\epsilon}_{eff}$",
     ),
     Plot(
         function=plot_stress_to_strain_rate,
-        field=( "tau_eff", "e_eff"),
+        field=("tau_eff", "e_eff"),
         label="Effective Stress to Effective Strain",
+        latex=(r"$\tau_{eff}$", r"$\dot{\epsilon}_{eff}$"),
     ),
 ]
 

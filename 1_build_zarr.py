@@ -59,6 +59,16 @@ def outer_shell(geom):
         geom = max(geom.geoms, key=lambda g: g.area)
     return Polygon(geom.exterior)
 
+def largest_polygon(geom):
+    if isinstance(geom, GeometryCollection):
+        parts = [g for g in geom.geoms if isinstance(g, (Polygon, MultiPolygon))]
+        if not parts:
+            raise ValueError("GeometryCollection contains no polygonal geometry")
+        geom = max(parts, key=lambda g: g.area)
+    if isinstance(geom, MultiPolygon):
+        geom = max(geom.geoms, key=lambda g: g.area)
+    return geom 
+
 buffersize = .1
 
 data_vars = {
@@ -127,7 +137,7 @@ for subfolder in (pbar := tqdm(subfolders, smoothing = 0, position = 0, dynamic_
     polygon = wkt.loads(polygon_path.read_text())
     
     tqdm.write(f"{polygon.geom_type} {polygon_path} \n{"-"*100}")
-    outer_polygon = outer_shell(polygon)
+    outer_polygon = largest_polygon(polygon)
 
     max_x, min_x, max_y, min_y = shelf_to_bbox[shelf]["bbox"]
     extent_x, extent_y = max_x - min_x, max_y - min_y

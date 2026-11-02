@@ -110,8 +110,11 @@ for label, comparison_list in comparisons.items():
         loc1, inv1 = comparison[0]
         loc2, inv2 = comparison[1]
         diff = (inv1,inv2)
-        if (name := mappings.get(diff, False)):
+        if (name := mappings.get(diff)):
             filtered_comparisons[label].append(dict(minuend = inv1, subtrahend = inv2, name = name, loc = (loc1,loc2)))
+
+    # for i in filtered_comparisons[label]:
+    #     print(f"{i["loc"]}, {i["name"]} ")
 
 filtered_comparisons = {key:value for key,value in filtered_comparisons.items() if len(value) > 0}
 
