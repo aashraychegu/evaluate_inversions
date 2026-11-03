@@ -8,7 +8,7 @@ import numpy as np
 from tqdm import tqdm
 
 parser = ArgumentParser()
-parser.add_argument("--folder")
+parser.add_argument("--folder", required = True)
 parser.add_argument("--config-name", default = "diff.toml")
 parser.add_argument("--output-dir", default = "/oak/stanford/groups/cyaolai/AashrayChegu/DIFFICE_DIFFS")
 args = parser.parse_args()

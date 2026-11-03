@@ -1,0 +1,7 @@
+fields = ["log_mu", "tau_eff", "R_xx", "log_e_eff"]
+
+[inversions]
+"tp1" = "Ross__patched_velocity_1995-2001__thickness_1995-2001"
+"tp2" = "Ross__patched_velocity_2007-2009__thickness_2007-2009"
+"tp3" = "Ross__patched_velocity_2014-2017__thickness_2014-2017"
+"tp4" = "Ross__patched_velocity_2020-2022__interp_thickness_2020-2022"

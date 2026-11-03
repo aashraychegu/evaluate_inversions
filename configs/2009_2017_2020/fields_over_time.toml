@@ -1,0 +1,7 @@
+fields = ["log_mu", "tau_eff", "R_xx", "log_e_eff"]
+
+[inversions]
+"2009" = "PineIsland__smoothed-2007-2009_2009-09-15_velocity__smoothed-2007-2009_2009-09-15_thickness"
+"2017" = "PineIsland__cleaned-2017-11-15_velocity__cleaned-2017-11-15_thickness"
+"2020" = "PineIsland__2020-05-16_velocity__2020-05-16_thickness"
+
