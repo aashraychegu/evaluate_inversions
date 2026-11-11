@@ -7,7 +7,8 @@ import cmocean
 from cmocean import cm
 
 
-def plot_field(ds, field: tuple[str], name, imgs_save_dir, save_name, latex=None, pad=0.02, diff=False) -> Path:
+def plot_field(ds, field: tuple[str], name, imgs_save_dir, save_name, latex=None, pad=0.02, diff=False,
+               cbmin=None, cbmax=None) -> Path:
     if latex is None:
         latex = field
     save_path = imgs_save_dir / save_name
@@ -23,7 +24,8 @@ def plot_field(ds, field: tuple[str], name, imgs_save_dir, save_name, latex=None
     if diff:
         internal_cmap = cm.curl
 
-    p = da.plot.imshow(aspect=1, size=10, add_colorbar=True, cmap=internal_cmap)
+    p = da.plot.imshow(aspect=1, size=10, add_colorbar=True, cmap=internal_cmap,
+                       vmin=cbmin, vmax=cbmax)
     if p.colorbar is not None:
         p.colorbar.set_label(rf"{latex}")
 
@@ -39,7 +41,8 @@ def plot_field(ds, field: tuple[str], name, imgs_save_dir, save_name, latex=None
     return save_path
 
 
-def plot_log_field(ds, field: tuple[str], name, imgs_save_dir, save_name, latex=None, pad=0.02, diff=False) -> Path:
+def plot_log_field(ds, field: tuple[str], name, imgs_save_dir, save_name, latex=None, pad=0.02, diff=False,
+                   cbmin=None, cbmax=None) -> Path:
     if latex is None:
         latex = field
     save_path = imgs_save_dir / save_name
@@ -55,7 +58,8 @@ def plot_log_field(ds, field: tuple[str], name, imgs_save_dir, save_name, latex=
     if diff:
         internal_cmap = cm.delta
 
-    p = da.plot.imshow(aspect=1, size=10, add_colorbar=True, norm=SymLogNorm(linthresh=1), cmap=internal_cmap)
+    norm = SymLogNorm(linthresh=1, vmin=cbmin, vmax=cbmax)
+    p = da.plot.imshow(aspect=1, size=10, add_colorbar=True, norm=norm, cmap=internal_cmap)
     if p.colorbar is not None:
         p.colorbar.set_label(rf"{latex}")
 
@@ -70,6 +74,7 @@ def plot_log_field(ds, field: tuple[str], name, imgs_save_dir, save_name, latex=
     plt.close()
     return save_path
 
+
 def plot_field_notext(
     ds,
     field: tuple[str],
@@ -80,9 +85,11 @@ def plot_field_notext(
     pad=0.02,
     diff=False,
     grid=False,
-    cmap = None,
+    cmap=None,
     grid_kwargs: dict | None = None,
     n_gridlines: int = 10,
+    cbmin=None,
+    cbmax=None,
 ) -> Path:
     save_path = imgs_save_dir / save_name
     da = ds[field]
@@ -108,13 +115,15 @@ def plot_field_notext(
         ax=ax,
         cmap=cmap,
         cbar_kwargs={"label": "", "ticks": []},
-        robust=True,
+        robust=True,          # only used for whichever limit is left as None
+        vmin=cbmin,
+        vmax=cbmax,
         extend="neither",
     )
 
     vmin, vmax = p.get_clim()
-    p.colorbar.ax.set_title(f"{vmax:.3g}", fontsize = 20)
-    p.colorbar.ax.set_xlabel(f"{vmin:.3g}",fontsize=20)
+    p.colorbar.ax.set_title(f"{vmax:.3g}", fontsize=20)
+    p.colorbar.ax.set_xlabel(f"{vmin:.3g}", fontsize=20)
 
     ax.set_xlim(float(xmin) - dx, float(xmax) + dx)
     ax.set_ylim(float(ymin) - dy, float(ymax) + dy)
@@ -126,7 +135,7 @@ def plot_field_notext(
                    labelleft=False, labelbottom=False)
     for spine in ax.spines.values():
         spine.set_visible(False)
-    ax.patch.set_visible(False)  
+    ax.patch.set_visible(False)
 
     if grid:
         ax.xaxis.set_major_locator(MaxNLocator(n_gridlines))
@@ -142,8 +151,8 @@ def plot_field_notext(
     return save_path
 
 
-
-def compare_fields(ds, field: tuple[str, str], name, imgs_save_dir, save_name, latex=None, pad=0.02, diff=False) -> Path:
+def compare_fields(ds, field: tuple[str, str], name, imgs_save_dir, save_name, latex=None, pad=0.02, diff=False,
+                   cbmin=None, cbmax=None) -> Path:
     if latex is None:
         latex = field
     save_path = imgs_save_dir / save_name
@@ -172,9 +181,9 @@ def compare_fields(ds, field: tuple[str, str], name, imgs_save_dir, save_name, l
     dx = (xmax - xmin) * pad
     dy = (ymax - ymin) * pad
 
-    # Shared color limits for the top two plots
-    shared_min = float(min(da_pred.min(), da_actual.min()))
-    shared_max = float(max(da_pred.max(), da_actual.max()))
+    # Shared color limits for the top two plots (overridable via cbmin/cbmax)
+    shared_min = float(cbmin) if cbmin is not None else float(min(da_pred.min(), da_actual.min()))
+    shared_max = float(cbmax) if cbmax is not None else float(max(da_pred.max(), da_actual.max()))
 
     # 1,1 - Predicted field (no individual colorbar)
     p1 = da_pred.plot.imshow(
@@ -217,7 +226,8 @@ def compare_fields(ds, field: tuple[str, str], name, imgs_save_dir, save_name, l
     return save_path
 
 
-def compare_speed(ds, field: tuple[str, str, str, str], name, imgs_save_dir, save_name, latex=None, pad=0.02, diff=False) -> Path:
+def compare_speed(ds, field: tuple[str, str, str, str], name, imgs_save_dir, save_name, latex=None, pad=0.02, diff=False,
+                  cbmin=None, cbmax=None) -> Path:
     if latex is None:
         latex = field
     save_path = imgs_save_dir / save_name
@@ -247,9 +257,9 @@ def compare_speed(ds, field: tuple[str, str, str, str], name, imgs_save_dir, sav
     dx = (xmax - xmin) * pad
     dy = (ymax - ymin) * pad
 
-    # Shared color limits for the top two plots
-    shared_min = float(min(pred_speed.min(), actual_speed.min()))
-    shared_max = float(max(pred_speed.max(), actual_speed.max()))
+    # Shared color limits for the top two plots (overridable via cbmin/cbmax)
+    shared_min = float(cbmin) if cbmin is not None else float(min(pred_speed.min(), actual_speed.min()))
+    shared_max = float(cbmax) if cbmax is not None else float(max(pred_speed.max(), actual_speed.max()))
 
     # 1,1 - Predicted speed (no individual colorbar)
     p1 = pred_speed.plot.imshow(
@@ -298,7 +308,8 @@ def compare_speed(ds, field: tuple[str, str, str, str], name, imgs_save_dir, sav
     return save_path
 
 
-def plot_side_by_side(ds, field: tuple[str, str], name, imgs_save_dir, save_name, latex=None, pad=0.02, diff=False, log_first=False, log_second=False) -> Path:
+def plot_side_by_side(ds, field: tuple[str, str], name, imgs_save_dir, save_name, latex=None, pad=0.02, diff=False,
+                      log_first=False, log_second=False, cbmin=None, cbmax=None) -> Path:
     if latex is None:
         latex = field
     save_path = imgs_save_dir / save_name
@@ -327,8 +338,14 @@ def plot_side_by_side(ds, field: tuple[str, str], name, imgs_save_dir, save_name
     if diff:
         internal_cmap = cm.diff
 
+    def _limits_kwargs(use_log):
+        # With a norm, limits must go into the norm (xarray rejects norm + vmin/vmax combos)
+        if use_log:
+            return {"norm": SymLogNorm(linthresh=1, vmin=cbmin, vmax=cbmax)}
+        return {"vmin": cbmin, "vmax": cbmax}
+
     # Plot first field
-    p1 = da_first.plot.imshow(ax=axes[0], add_colorbar=True, norm=(SymLogNorm(linthresh=1) if log_first else None), cmap=internal_cmap)
+    p1 = da_first.plot.imshow(ax=axes[0], add_colorbar=True, cmap=internal_cmap, **_limits_kwargs(log_first))
     if p1.colorbar is not None:
         p1.colorbar.set_label(rf"{first_latex}")
     axes[0].set_title(rf"{first_latex}")
@@ -336,7 +353,7 @@ def plot_side_by_side(ds, field: tuple[str, str], name, imgs_save_dir, save_name
     axes[0].set_ylim(float(ymin) - dy, float(ymax) + dy)
 
     # Plot second field
-    p2 = da_second.plot.imshow(ax=axes[1], add_colorbar=True, norm=(SymLogNorm(linthresh=1) if log_second else None), cmap=internal_cmap)
+    p2 = da_second.plot.imshow(ax=axes[1], add_colorbar=True, cmap=internal_cmap, **_limits_kwargs(log_second))
     if p2.colorbar is not None:
         p2.colorbar.set_label(rf"{second_latex}")
     axes[1].set_title(rf"{second_latex}")
@@ -350,7 +367,9 @@ def plot_side_by_side(ds, field: tuple[str, str], name, imgs_save_dir, save_name
     return save_path
 
 
-def histogram(ds, field: tuple[str], name, imgs_save_dir, save_name, latex=None, pad=0.02, diff=False, log_x=False) -> Path:
+def histogram(ds, field: tuple[str], name, imgs_save_dir, save_name, latex=None, pad=0.02, diff=False, log_x=False,
+              cbmin=None, cbmax=None) -> Path:
+    # cbmin / cbmax are accepted for a uniform signature; no colorbar here, so they are unused.
     if latex is None:
         latex = field
     save_path = imgs_save_dir / save_name
@@ -395,7 +414,9 @@ def histogram(ds, field: tuple[str], name, imgs_save_dir, save_name, latex=None,
     return save_path
 
 
-def plot_stress_to_strain_rate(ds, field: tuple[str, str], name, imgs_save_dir, save_name, latex=None, pad=0.02, diff=False) -> Path:
+def plot_stress_to_strain_rate(ds, field: tuple[str, str], name, imgs_save_dir, save_name, latex=None, pad=0.02, diff=False,
+                               cbmin=None, cbmax=None) -> Path:
+    # cbmin / cbmax are accepted for a uniform signature; no colorbar here, so they are unused.
     if latex is None:
         latex = field
     save_path = imgs_save_dir / save_name
@@ -473,13 +494,14 @@ def plot_stress_to_strain_rate(ds, field: tuple[str, str], name, imgs_save_dir, 
     plt.close()
     return save_path
 
-
 class Plot:
-    def __init__(self, function, field, label, latex=None):
+    def __init__(self, function, field, label, latex=None, cbmin = None, cbmax = None):
         self.field = field
         self.function = function
         self.label = label
         self.latex = field
+        self.cbmin = cbmin
+        self.cbmax = cbmax
         if latex is not None:
             self.latex = latex
 
@@ -487,5 +509,5 @@ class Plot:
         # ds, field: tuple[str, str], name, imgs_save_dir, save_name
         return self.function(
             ds=ds, field=self.field, name=name, imgs_save_dir=imgs_save_dir,
-            save_name=self.label, latex=self.latex
+            save_name=self.label, latex=self.latex, cbmin = self.cbmin, cbmax = self.cbmax,
         ), f"{name} - {self.label} - {self.field}"

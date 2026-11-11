@@ -27,6 +27,8 @@ def to_grid(flat_values, mask):
     grid[mask] = np.asarray(flat_values).ravel()
     return grid
 
+# Julian year
+sec_in_year = 3.1557600E7
 
 def regrid_scalar(src_x, src_y, src_values, X, Y, valid_mask):
 
@@ -111,8 +113,8 @@ for subfolder in (pbar := tqdm(subfolders, smoothing = 0, position = 0, dynamic_
     
     orig_uv_x = raw_source["x"] 
     orig_uv_y = raw_source["y"]
-    orig_u = raw_source["u_true"]
-    orig_v = raw_source["v_true"]
+    orig_u = raw_source["u_true"] / sec_in_year
+    orig_v = raw_source["v_true"] / sec_in_year
     orig_h_x = raw_source["x_h"]
     orig_h_y = raw_source["y_h"]
     orig_h = raw_source["h_true"]
@@ -160,19 +162,19 @@ for subfolder in (pbar := tqdm(subfolders, smoothing = 0, position = 0, dynamic_
     strain_rate = network.strain_rate(stacked_xy)
     fields = network.field(stacked_xy)
 
-    mu    = to_grid(fields["mu"]         , inside_mask)
-    u     = to_grid(fields["u"]          , inside_mask) 
-    v     = to_grid(fields["v"]          , inside_mask)
-    h     = to_grid(fields["h"]          , inside_mask)
+    mu    = to_grid(fields["mu"] * sec_in_year,              inside_mask)
+    u     = to_grid(fields["u"] / sec_in_year, inside_mask) 
+    v     = to_grid(fields["v"] / sec_in_year, inside_mask)
+    h     = to_grid(fields["h"],               inside_mask)
  
-    du_dx = to_grid(strain_rate["u_x"]   , inside_mask)
-    du_dy = to_grid(strain_rate["u_y"]   , inside_mask)
-    dv_dx = to_grid(strain_rate["v_x"]   , inside_mask)
-    dv_dy = to_grid(strain_rate["v_y"]   , inside_mask)
-    e_eff = to_grid(strain_rate["e_eff"] , inside_mask)
-    e_xx  = to_grid(strain_rate["exx"]   , inside_mask)
-    e_xy  = to_grid(strain_rate["exy"]   , inside_mask)
-    e_yy  = to_grid(strain_rate["eyy"]   , inside_mask)
+    du_dx = to_grid(strain_rate["u_x"]      /  sec_in_year   , inside_mask)
+    du_dy = to_grid(strain_rate["u_y"]      /  sec_in_year   , inside_mask)
+    dv_dx = to_grid(strain_rate["v_x"]      /  sec_in_year   , inside_mask)
+    dv_dy = to_grid(strain_rate["v_y"]      / sec_in_year   , inside_mask)
+    e_eff = to_grid(strain_rate["e_eff"]    / sec_in_year , inside_mask)
+    e_xx  = to_grid(strain_rate["exx"]      / sec_in_year   , inside_mask)
+    e_xy  = to_grid(strain_rate["exy"]      / sec_in_year   , inside_mask)
+    e_yy  = to_grid(strain_rate["eyy"]      / sec_in_year   , inside_mask)
 
     tau_xx = 2 * mu * e_xx
     tau_xy = 2 * mu * e_xy

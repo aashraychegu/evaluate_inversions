@@ -1,104 +1,26 @@
-[comparisons."tp1 patched minus unpatched"]
-minuend = "Ross__patched_velocity_1995-2001__thickness_1995-2001"
-subtrahend = "Ross__velocity_1995-2001__thickness_1995-2001"
-
-[comparisons."tp2 patched minus unpatched"]
-minuend = "Ross__patched_velocity_2007-2009__thickness_2007-2009"
-subtrahend = "Ross__velocity_2007-2009__thickness_2007-2009"
-
-[comparisons."tp3 patched minus unpatched"]
-minuend = "Ross__patched_velocity_2007-2009__thickness_2007-2009"
-subtrahend = "Ross__velocity_2007-2009__thickness_2007-2009"
-
-[comparisons."tp4 patched minus unpatched"]
-minuend     = "Ross__patched_velocity_2020-2022__interp_thickness_2020-2022"
-subtrahend  = "Ross__velocity_2020-2022__interp_thickness_2020-2022"
-
-[comparisons."tp1 tp-thickness minus bm4"]
-minuend     = "Ross__patched_velocity_1995-2001__thickness_1995-2001"
-subtrahend  = "Ross__patched_velocity_1995-2001__thickness_bm4"
-
-[comparisons."tp2 tp-thickness minus bm4"]
-minuend     = "Ross__patched_velocity_2007-2009__thickness_2007-2009"
-subtrahend  = "Ross__patched_velocity_2007-2009__thickness_bm4"
-
-[comparisons."tp3 tp-thickness minus bm4"]
-minuend     = "Ross__patched_velocity_2014-2017__thickness_2014-2017"
-subtrahend  = "Ross__patched_velocity_2014-2017__thickness_bm4"
-
-[comparisons."tp4 tp-thickness minus bm4"]
-minuend     = "Ross__patched_velocity_2020-2022__interp_thickness_2020-2022"
-subtrahend  = "Ross__patched_velocity_2020-2022__thickness_bm4"
-
 [comparisons."patched tp4 minus tp3"]
-minuend     = "Ross__patched_velocity_2020-2022__interp_thickness_2020-2022"
-subtrahend  = "Ross__patched_velocity_2014-2017__thickness_2014-2017"
+minuend = "Ross__patched_velocity_2020-2022__interp_thickness_2020-2022"
+subtrahend = "Ross__patched_velocity_2014-2017__thickness_2014-2017"
 
 [comparisons."patched tp4 minus tp2"]
-minuend     = "Ross__patched_velocity_2020-2022__interp_thickness_2020-2022"
-subtrahend  = "Ross__patched_velocity_2007-2009__thickness_2007-2009"
+minuend = "Ross__patched_velocity_2020-2022__interp_thickness_2020-2022"
+subtrahend = "Ross__patched_velocity_2007-2009__thickness_2007-2009"
 
 [comparisons."patched tp4 minus tp1"]
-minuend     = "Ross__patched_velocity_2020-2022__interp_thickness_2020-2022"
-subtrahend  = "Ross__patched_velocity_1995-2001__thickness_1995-2001"
+minuend = "Ross__patched_velocity_2020-2022__interp_thickness_2020-2022"
+subtrahend = "Ross__patched_velocity_1995-2001__thickness_1995-2001"
 
 [comparisons."patched tp3 minus tp2"]
-minuend     = "Ross__patched_velocity_2014-2017__thickness_2014-2017"
-subtrahend  = "Ross__patched_velocity_2007-2009__thickness_2007-2009"
+minuend = "Ross__patched_velocity_2014-2017__thickness_2014-2017"
+subtrahend = "Ross__patched_velocity_2007-2009__thickness_2007-2009"
 
 [comparisons."patched tp3 minus tp1"]
-minuend     = "Ross__patched_velocity_2014-2017__thickness_2014-2017"
-subtrahend  = "Ross__patched_velocity_1995-2001__thickness_1995-2001"
+minuend = "Ross__patched_velocity_2014-2017__thickness_2014-2017"
+subtrahend = "Ross__patched_velocity_1995-2001__thickness_1995-2001"
 
 [comparisons."patched tp2 minus tp1"]
-minuend     = "Ross__patched_velocity_2007-2009__thickness_2007-2009"
-subtrahend  = "Ross__patched_velocity_1995-2001__thickness_1995-2001"
+minuend = "Ross__patched_velocity_2007-2009__thickness_2007-2009"
+subtrahend = "Ross__patched_velocity_1995-2001__thickness_1995-2001"
 
-[comparisons."unpatched tp4 minus tp3"]
-minuend     = "Ross__velocity_2020-2022__interp_thickness_2020-2022"
-subtrahend  = "Ross__velocity_2014-2017__thickness_2014-2017"
-
-[comparisons."unpatched tp4 minus tp2"]
-minuend     = "Ross__velocity_2020-2022__interp_thickness_2020-2022"
-subtrahend  = "Ross__velocity_2007-2009__thickness_2007-2009"
-
-[comparisons."unpatched tp4 minus tp1"]
-minuend     = "Ross__velocity_2020-2022__interp_thickness_2020-2022"
-subtrahend  = "Ross__velocity_1995-2001__thickness_1995-2001"
-
-[comparisons."unpatched tp3 minus tp2"]
-minuend     = "Ross__velocity_2014-2017__thickness_2014-2017"
-subtrahend  = "Ross__velocity_2007-2009__thickness_2007-2009"
-
-[comparisons."unpatched tp3 minus tp1"]
-minuend     = "Ross__velocity_2014-2017__thickness_2014-2017"
-subtrahend  = "Ross__velocity_1995-2001__thickness_1995-2001"
-
-[comparisons."unpatched tp2 minus tp1"]
-minuend     = "Ross__velocity_2007-2009__thickness_2007-2009"
-subtrahend  = "Ross__velocity_1995-2001__thickness_1995-2001"
-
-[comparisons."tracks patched tp3 minus tp2"]
-minuend     = "Ross__patched_velocity_2014-2017__bedmap3"
-subtrahend  = "Ross__patched_velocity_2007-2009__bedmap3"
-
-[comparisons."tracks patched tp3 minus tp1"]
-minuend     = "Ross__patched_velocity_2014-2017__bedmap3"
-subtrahend  = "Ross__patched_velocity_1995-2001__bedmap3"
-
-[comparisons."tracks patched tp2 minus tp1"]
-minuend     = "Ross__patched_velocity_2007-2009__bedmap3"
-subtrahend  = "Ross__patched_velocity_1995-2001__bedmap3"
-
-[comparisons."tracks unpatched tp3 minus tp2"]
-minuend     = "Ross__velocity_2014-2017__bedmap3"
-subtrahend  = "Ross__velocity_2007-2009__bedmap3"
-
-[comparisons."tracks unpatched tp3 minus tp1"]
-minuend     = "Ross__velocity_2014-2017__bedmap3"
-subtrahend  = "Ross__velocity_1995-2001__bedmap3"
-
-[comparisons."tracks unpatched tp2 minus tp1"]
-minuend     = "Ross__velocity_2007-2009__bedmap3"
-subtrahend  = "Ross__velocity_1995-2001__bedmap3"
+# --# --
 

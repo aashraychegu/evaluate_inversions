@@ -42,8 +42,8 @@ for count, subfolder in tqdm(list(enumerate(subfolders))):
     data = np.load(resid_file)
     inversion_name = subfolder.name
     shelf, raw_velocity, raw_thickness = inversion_name.split("__") 
-    velocity_product, velocity_start, velocity_end = parse[raw_velocity]
-    thickness_product, thickness_start, thickness_end = parse[raw_thickness]
+    velocity_product, velocity_start, velocity_end = parse.get(raw_velocity,[raw_velocity, "-", "-"])
+    thickness_product, thickness_start, thickness_end = parse.get(raw_thickness,[raw_thickness, "-", "-"])
     res_x, res_y = data["residual_x"], data["residual_y"]
     mean_res_x, mean_res_y = mean_abs(res_x)  , mean_abs(res_y)
     med_res_x , med_res_y  = median_abs(res_x), median_abs(res_y)

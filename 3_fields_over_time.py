@@ -41,9 +41,15 @@ def _plot_row(
     cmap,
     title_suffix: str = "",
     pad: float = 0.02,
-    anomaly_func = None,
+    anomaly_func=None,
+    cbmin: Optional[float] = None,
+    cbmax: Optional[float] = None,
 ):
-    """Shared logic: plot `field` from every dataset across one row of axes."""
+    """Shared logic: plot `field` from every dataset across one row of axes.
+
+    cbmin / cbmax override the lower / upper colorbar limits. A limit left as
+    None is computed automatically from the data (shared across the row).
+    """
     if latex is None:
         latex = field
 
@@ -51,15 +57,20 @@ def _plot_row(
     das = [_get_2d(ds[name], field) for name in names]
 
     if anomaly_func is not None:
-        all_values = np.concatenate([da.values for da in das])
-        median = np.median(all_values)
-        for da in das:
-            da = anomaly_func(da,median)        
+        all_values = np.concatenate([da.values.ravel() for da in das])
+        median = np.nanmedian(all_values)
+        das = [anomaly_func(da, median) for da in das]
 
-    # Common color limits across the row
+    # Common color limits across the row (automatic)
     vmin = float(np.nanmin([np.nanmin(da.values) for da in das]))
     vmax = float(np.nanmax([np.nanmax(da.values) for da in das]))
     norm = norm_factory(vmin, vmax)
+
+    # Explicit colorbar limits take precedence over the automatic ones
+    if cbmin is not None:
+        norm.vmin = float(cbmin)
+    if cbmax is not None:
+        norm.vmax = float(cbmax)
 
     # Common spatial extent across the row (union of valid regions)
     extents = [e for e in (_valid_extent(da) for da in das) if e is not None]
@@ -79,7 +90,7 @@ def _plot_row(
             add_colorbar=False,
             norm=norm,
             cmap=cmap,
-            robust = True,
+            robust=True,
         )
         a.set_aspect(1)
         a.set_title(rf"{name} : {latex}{title_suffix}", fontsize=10)
@@ -97,16 +108,19 @@ def _plot_row(
     # One colorbar for the whole row
     if im is not None:
         fig = ax[0].get_figure()
-        cbar = fig.colorbar(im, ax=list(ax), shrink=0.9, pad=0.01) 
+        cbar = fig.colorbar(im, ax=list(ax), shrink=0.9, pad=0.01)
         cbar.set_label(rf"{latex}")
 
     return im
 
+
 def subtract(subtrahend, minuend):
     return subtrahend - minuend
 
+
 def divide(numerator, denominator):
     return numerator / denominator
+
 
 def plot_field(
     ds: Dict[str, xr.Dataset],
@@ -115,14 +129,14 @@ def plot_field(
     save_name: str,
     latex: Optional[str] = None,
     pad: float = 0.02,
-    diff: bool = False,
-    anomaly = False
+    diff: bool = True,
+    anomaly: bool = False,
+    cbmin: Optional[float] = None,
+    cbmax: Optional[float] = None,
 ):
     cmap = cm.curl if diff else cm.thermal
-    
-    anomaly_func = None
-    if anomaly:
-        anomaly_func = subtract
+
+    anomaly_func = subtract if anomaly else None
 
     def norm_factory(vmin, vmax):
         if diff:  # symmetric about zero for difference plots
@@ -130,7 +144,11 @@ def plot_field(
             return Normalize(vmin=-lim, vmax=lim)
         return Normalize(vmin=vmin, vmax=vmax)
 
-    return _plot_row(ds, field, ax, save_name, latex, norm_factory, cmap, pad=pad, anomaly_func = anomaly_func)
+    return _plot_row(
+        ds, field, ax, save_name, latex, norm_factory, cmap,
+        pad=pad, anomaly_func=anomaly_func, cbmin=cbmin, cbmax=cbmax,
+    )
+
 
 def plot_log_field(
     ds: Dict[str, xr.Dataset],
@@ -139,9 +157,11 @@ def plot_log_field(
     save_name: str,
     latex: Optional[str] = None,
     pad: float = 0.02,
-    diff: bool = False,
+    diff: bool = True,
     linthresh: float = 1.0,
-    anomaly = False
+    anomaly: bool = False,
+    cbmin: Optional[float] = None,
+    cbmax: Optional[float] = None,
 ):
     cmap = cm.delta if diff else cm.dense
 
@@ -150,61 +170,65 @@ def plot_log_field(
             lim = max(abs(vmin), abs(vmax))
             return SymLogNorm(linthresh=linthresh, vmin=-lim, vmax=lim)
         return SymLogNorm(linthresh=linthresh, vmin=vmin, vmax=vmax)
-    
-    anomaly_func = None
-    if anomaly:
-        anomaly_func = divide
-    
+
+    anomaly_func = divide if anomaly else None
+
     return _plot_row(
         ds, field, ax, save_name, latex, norm_factory, cmap,
-        title_suffix=" (log scale)", pad=pad, anomaly_func = anomaly_func,
+        title_suffix=" (log scale)", pad=pad, anomaly_func=anomaly_func,
+        cbmin=cbmin, cbmax=cbmax,
     )
 
 
 class Plot:
-    def __init__(self, function, field, label, anomaly = False, latex=None):
+    def __init__(self, function, field, label, anomaly=False, latex=None, cbmin=None, cbmax=None):
         self.field = field
         self.function = function
         self.label = label
         self.latex = latex if latex is not None else f"${field}$"
         self.anomaly = anomaly
+        self.cbmin = cbmin
+        self.cbmax = cbmax
 
     def __call__(self, ds, ax):
         return self.function(
             ds=ds, field=self.field, ax=ax,
             save_name=self.label, latex=self.latex,
+            anomaly=self.anomaly,
+            cbmin=self.cbmin, cbmax=self.cbmax,
         )
 
 
 all_plot_vars = {
-    "mu"        : Plot(function=plot_field,     field="mu", label="Viscosity"),
-    "log_mu"    : Plot(function=plot_log_field, field="mu", label="Log Viscosity"),
-    "e_eff"     : Plot(function=plot_field,     field="e_eff", label="Effective Strain Rate"),
-    "log_e_eff" : Plot(function=plot_log_field, field="e_eff", label="Log Effective Strain Rate"),
-    "e_xx"      : Plot(function=plot_field,     field="e_xx", label="Strain Rate XX Component"),
-    "e_xy"      : Plot(function=plot_field,     field="e_xy", label="Strain Rate XY Component"),
-    "e_yy"      : Plot(function=plot_field,     field="e_yy", label="Strain YY Component"),
-    "tau_eff"   : Plot(function=plot_field,     field="tau_eff", label="Effective Stress"),
-    "tau_xx"    : Plot(function=plot_field,     field="tau_xx", label="Stress XX Component"),
-    "tau_xy"    : Plot(function=plot_field,     field="tau_xy", label="Stress XY Component"),
-    "tau_yy"    : Plot(function=plot_field,     field="tau_yy", label="Stress YY Component"),
-    "tau_1"     : Plot(function=plot_field,     field="tau_1", label="Stress Primary Component"),
-    "tau_2"     : Plot(function=plot_field,     field="tau_2", label="Stress Secondary Component"),
-    "R_xx"      : Plot(function=plot_field,     field="R_xx", label="Extensional Stress (R_xx)"),
-    "anom_mu"   : Plot(function=plot_field,     field="mu", label="Viscosity"),
-    "anom_log_mu"   : Plot(function=plot_log_field, anomaly = True, field="mu",      label="Anomaly of Log Viscosity"),
-    "anom_e_eff"    : Plot(function=plot_field,     anomaly = True, field="e_eff",   label="Anomaly of Effective Strain Rate"),
-    "anom_log_e_eff": Plot(function=plot_log_field, anomaly = True, field="e_eff",   label="Anomaly of Log Effective Strain Rate"),
-    "anom_e_xx"     : Plot(function=plot_field,     anomaly = True, field="e_xx",    label="Anomaly of Strain Rate XX Component"),
-    "anom_e_xy"     : Plot(function=plot_field,     anomaly = True, field="e_xy",    label="Anomaly of Strain Rate XY Component"),
-    "anom_e_yy"     : Plot(function=plot_field,     anomaly = True, field="e_yy",    label="Anomaly of Strain YY Component"),
-    "anom_tau_eff"  : Plot(function=plot_field,     anomaly = True, field="tau_eff", label="Anomaly of Effective Stress"),
-    "anom_tau_xx"   : Plot(function=plot_field,     anomaly = True, field="tau_xx",  label="Anomaly of Stress XX Component"),
-    "anom_tau_xy"   : Plot(function=plot_field,     anomaly = True, field="tau_xy",  label="Anomaly of Stress XY Component"),
-    "anom_tau_yy"   : Plot(function=plot_field,     anomaly = True, field="tau_yy",  label="Anomaly of Stress YY Component"),
-    "anom_tau_1"    : Plot(function=plot_field,     anomaly = True, field="tau_1",   label="Anomaly of Stress Primary Component"),
-    "anom_tau_2"    : Plot(function=plot_field,     anomaly = True, field="tau_2",   label="Anomaly of Stress Secondary Component"),
-    "anom_R_xx"     : Plot(function=plot_field,     anomaly = True, field="R_xx",    label="Anomaly of Extensional Stress (R_xx)"),
+    "mu"            : Plot(function=plot_field,     field="mu",         latex=r"$$\mu$$",                       label="Viscosity",                   cbmin=None, cbmax=None),
+    "log_mu"        : Plot(function=plot_log_field, field="mu",         latex=r"$$log(\mu)$$",                  label="Log Viscosity",               cbmin=None, cbmax=None),
+    "e_eff"         : Plot(function=plot_field,     field="e_eff",      latex=r"$$\dot \epsilon_{eff}$$",       label="Effective Strain Rate",       cbmin=None, cbmax=None),
+    "log_e_eff"     : Plot(function=plot_log_field, field="e_eff",      latex=r"$$log(\dot \epsilon_{eff})$$",  label="Log Effective Strain Rate",   cbmin=None, cbmax=None),
+    "e_xx"          : Plot(function=plot_field,     field="e_xx",       latex=r"$$\dot \epsilon_{xx}$$",        label="Strain Rate XX Component",    cbmin=None, cbmax=None),
+    "e_xy"          : Plot(function=plot_field,     field="e_xy",       latex=r"$$\dot \epsilon_{xy}$$",        label="Strain Rate XY Component",    cbmin=None, cbmax=None),
+    "e_yy"          : Plot(function=plot_field,     field="e_yy",       latex=r"$$\dot \epsilon_{yy}$$",        label="Strain YY Component",         cbmin=None, cbmax=None),
+    "tau_eff"       : Plot(function=plot_field,     field="tau_eff",    latex=r"$$\tau_{eff}$$",                label="Effective Stress",            cbmin=None, cbmax=None),
+    "tau_xx"        : Plot(function=plot_field,     field="tau_xx",     latex=r"$$\tau_{xx}$$",                 label="Stress XX Component",         cbmin=None, cbmax=None),
+    "tau_xy"        : Plot(function=plot_field,     field="tau_xy",     latex=r"$$\tau_{xy}$$",                 label="Stress XY Component",         cbmin=None, cbmax=None),
+    "tau_yy"        : Plot(function=plot_field,     field="tau_yy",     latex=r"$$\tau_{yy}$$",                 label="Stress YY Component",         cbmin=None, cbmax=None),
+    "tau_1"         : Plot(function=plot_field,     field="tau_1",      latex=r"$$\tau_{1}$$",                  label="Stress Primary Component",    cbmin=None, cbmax=None),
+    "tau_2"         : Plot(function=plot_field,     field="tau_2",      latex=r"$$\tau_{2}$$",                  label="Stress Secondary Component",  cbmin=None, cbmax=None),
+    "R_xx"          : Plot(function=plot_field,     field="R_xx",       latex=r"$$R_{xx}$$",                    label="Extensional Stress (R_xx)",   cbmin=None, cbmax=None),
+
+    "anom_mu"       : Plot(function=plot_field,     anomaly=True, field="mu",      latex=r"$$\text{Anomaly of} \mu$$",                       label="Anomaly of Viscosity",                     cbmin=None, cbmax=None),
+    "anom_log_mu"   : Plot(function=plot_log_field, anomaly=True, field="mu",      latex=r"$$\text{Anomaly of} log(\mu)$$",                  label="Anomaly of Log Viscosity",                 cbmin=None, cbmax=None),
+    "anom_e_eff"    : Plot(function=plot_field,     anomaly=True, field="e_eff",   latex=r"$$\text{Anomaly of} \dot \epsilon_{eff}$$",       label="Anomaly of Effective Strain Rate",         cbmin=None, cbmax=None),
+    "anom_log_e_eff": Plot(function=plot_log_field, anomaly=True, field="e_eff",   latex=r"$$\text{Anomaly of} log(\dot \epsilon_{eff})$$",  label="Anomaly of Log Effective Strain Rate",     cbmin=None, cbmax=None),
+    "anom_e_xx"     : Plot(function=plot_field,     anomaly=True, field="e_xx",    latex=r"$$\text{Anomaly of} \dot \epsilon_{xx}$$",        label="Anomaly of Strain Rate XX Component",      cbmin=None, cbmax=None),
+    "anom_e_xy"     : Plot(function=plot_field,     anomaly=True, field="e_xy",    latex=r"$$\text{Anomaly of} \dot \epsilon_{xy}$$",        label="Anomaly of Strain Rate XY Component",      cbmin=None, cbmax=None),
+    "anom_e_yy"     : Plot(function=plot_field,     anomaly=True, field="e_yy",    latex=r"$$\text{Anomaly of} \dot \epsilon_{yy}$$",        label="Anomaly of Strain YY Component",           cbmin=None, cbmax=None),
+    "anom_tau_eff"  : Plot(function=plot_field,     anomaly=True, field="tau_eff", latex=r"$$\text{Anomaly of} \tau_{eff}$$",                label="Anomaly of Effective Stress",              cbmin=None, cbmax=None),
+    "anom_tau_xx"   : Plot(function=plot_field,     anomaly=True, field="tau_xx",  latex=r"$$\text{Anomaly of} \tau_{xx}$$",                 label="Anomaly of Stress XX Component",           cbmin=None, cbmax=None),
+    "anom_tau_xy"   : Plot(function=plot_field,     anomaly=True, field="tau_xy",  latex=r"$$\text{Anomaly of} \tau_{xy}$$",                 label="Anomaly of Stress XY Component",           cbmin=None, cbmax=None),
+    "anom_tau_yy"   : Plot(function=plot_field,     anomaly=True, field="tau_yy",  latex=r"$$\text{Anomaly of} \tau_{yy}$$",                 label="Anomaly of Stress YY Component",           cbmin=None, cbmax=None),
+    "anom_tau_1"    : Plot(function=plot_field,     anomaly=True, field="tau_1",   latex=r"$$\text{Anomaly of} \tau_{1}$$",                  label="Anomaly of Stress Primary Component",      cbmin=None, cbmax=None),
+    "anom_tau_2"    : Plot(function=plot_field,     anomaly=True, field="tau_2",   latex=r"$$\text{Anomaly of} \tau_{2}$$",                  label="Anomaly of Stress Secondary Component",    cbmin=None, cbmax=None),
+    "anom_R_xx"     : Plot(function=plot_field,     anomaly=True, field="R_xx",    latex=r"$$\text{Anomaly of} R_{xx}$$",                    label="Anomaly of Extensional Stress (R_xx)",     cbmin=None, cbmax=None),
 }
 
 
@@ -221,7 +245,7 @@ fields: List = spec_file["fields"]
 
 plot_vars = [all_plot_vars[field] for field in fields]
 name_to_zarr: Dict[str, xr.Dataset] = {
-    key: xr.open_zarr(folder / path / "stress.zarr", consolidated=False)
+    key: xr.open_zarr(folder / path / "evaluations.zarr", consolidated=False)
     for key, path in inversions.items()
 }
 

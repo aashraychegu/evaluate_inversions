@@ -46,7 +46,7 @@ for label, zarrs in tqdm(comparisons.items(), smoothing=0, position=1,):
             data_vars[data_var] = diff
 
         if data_var == "mu":
-            data_vars["log(delta mu)"] = np.log(minuend) - np.log(subtrahend)
+            data_vars["delta log(mu)"] = np.log(minuend) - np.log(subtrahend)
 
     ds = xr.Dataset(
         data_vars=data_vars,

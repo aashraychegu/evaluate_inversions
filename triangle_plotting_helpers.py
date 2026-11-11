@@ -72,7 +72,7 @@ def draw_triangle_plot(plot_info, x_max, y_max, name, save_path, pad,
     return save_path
 
 
-def plot_field(ds, field: tuple[str], name, imgs_save_dir, save_name, pad=0.02) -> Path:
+def plot_field(ds, field: tuple[str], name, imgs_save_dir, save_name, latex = None, pad=0.02) -> Path:
     save_path = imgs_save_dir / save_name
     plot_info, x_max, y_max = get_plot_info(ds, field)
     # tqdm.write("  maxes:", x_max, y_max)
@@ -86,7 +86,7 @@ def plot_field(ds, field: tuple[str], name, imgs_save_dir, save_name, pad=0.02) 
     )
 
 
-def plot_log_field(ds, field: tuple[str], name, imgs_save_dir, save_name, pad=0.02) -> Path:
+def plot_log_field(ds, field: tuple[str], name, imgs_save_dir, save_name, latex = None, pad=0.02) -> Path:
     save_path = imgs_save_dir / save_name
     plot_info, x_max, y_max = get_plot_info(ds, field)
 
