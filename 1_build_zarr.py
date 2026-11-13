@@ -73,27 +73,6 @@ def largest_polygon(geom):
 
 buffersize = .1
 
-data_vars = {
-        ("regrid_h",): None,
-        ("regrid_u",): None, 
-        ("regrid_v",): None, 
-        ("mask",): None, 
-        ("h",): None,
-        ("u",): None,
-        ("v",): None,
-        ("e_eff",): None,
-        ("e_xx",): None, 
-        ("e_xy",): None, 
-        ("e_yy",): None, 
-        ("tau_eff",): None, 
-        ("tau_xx",): None, 
-        ("tau_xy",): None, 
-        ("tau_yy",): None, 
-        ("tau_1",): None, 
-        ("tau_2",): None, 
-        ("R_xx",): None,
-}
-
 shelves_path = Path(".shelves.toml")
 shelf_to_bbox = tomllib.loads(shelves_path.read_text())
 
@@ -126,7 +105,7 @@ for subfolder in (pbar := tqdm(subfolders, smoothing = 0, position = 0, dynamic_
     polygon_path = parent_dir / f"{name}_polygon.wkt"
 
     if not source_file.exists():
-        tqdm.write(f"skipping {subfolder.name}")
+        tqdm.write(f"skipping {subfolder.name}, as source file {source_file} does not exist")
         continue
     
     network = load_trained_network(yaml_path,subfolder)
@@ -156,7 +135,7 @@ for subfolder in (pbar := tqdm(subfolders, smoothing = 0, position = 0, dynamic_
     regrid_h = regrid_scalar(orig_h_x,  orig_h_y,  orig_h, X, Y, valid_data_mask)
     regrid_u = regrid_scalar(orig_uv_x, orig_uv_y, orig_u, X, Y, valid_data_mask)
     regrid_v = regrid_scalar(orig_uv_x, orig_uv_y, orig_v, X, Y, valid_data_mask)
-
+    regrid_speed = (regrid_u **2 + regrid_v**2)**(1/2)
     stacked_xy = np.column_stack([X[inside_mask], Y[inside_mask]])
 
     strain_rate = network.strain_rate(stacked_xy)
@@ -166,6 +145,7 @@ for subfolder in (pbar := tqdm(subfolders, smoothing = 0, position = 0, dynamic_
     u     = to_grid(fields["u"] / sec_in_year, inside_mask) 
     v     = to_grid(fields["v"] / sec_in_year, inside_mask)
     h     = to_grid(fields["h"],               inside_mask)
+    speed = (u **2 + v**2)**(1/2)
  
     du_dx = to_grid(strain_rate["u_x"]      /  sec_in_year   , inside_mask)
     du_dy = to_grid(strain_rate["u_y"]      /  sec_in_year   , inside_mask)
@@ -191,29 +171,46 @@ for subfolder in (pbar := tqdm(subfolders, smoothing = 0, position = 0, dynamic_
 
     ds = xr.Dataset(
         data_vars=dict(
-            mask      = ( ("y", "x"), valid_data_mask   ),
-            regrid_h  = ( ("y", "x"), regrid_h          ),
-            regrid_u  = ( ("y", "x"), regrid_u          ),
-            regrid_v  = ( ("y", "x"), regrid_v          ),
-            mu        = ( ("y", "x"), mu                ),
-            u         = ( ("y", "x"), u                 ),
-            v         = ( ("y", "x"), v                 ),
-            h         = ( ("y", "x"), h                 ),
-            du_dx     = ( ("y", "x"), du_dx             ),
-            du_dy     = ( ("y", "x"), du_dy             ),
-            dv_dx     = ( ("y", "x"), dv_dx             ),
-            dv_dy     = ( ("y", "x"), dv_dy             ),
-            e_eff     = ( ("y", "x"), e_eff             ),
-            e_xx      = ( ("y", "x"), e_xx              ),
-            e_xy      = ( ("y", "x"), e_xy              ),
-            e_yy      = ( ("y", "x"), e_yy              ),
-            tau_eff   = ( ("y", "x"), tau_eff           ),
-            tau_xx    = ( ("y", "x"), tau_xx            ),
-            tau_xy    = ( ("y", "x"), tau_xy            ),
-            tau_yy    = ( ("y", "x"), tau_yy            ),
-            tau_1     = ( ("y", "x"), tau_1             ),
-            tau_2     = ( ("y", "x"), tau_2             ),
-            R_xx      = ( ("y", "x"), R_xx              ),
+            
+            mask         = ( ("y", "x"), valid_data_mask        ),
+ #
+            regrid_u     = ( ("y", "x"), regrid_u               ),
+            regrid_v     = ( ("y", "x"), regrid_v               ),
+            regrid_speed = ( ("y", "x"), regrid_speed),
+            regrid_h     = ( ("y", "x"), regrid_h               ),
+ #            
+            u            = ( ("y", "x"), u                      ),
+            v            = ( ("y", "x"), v                      ),
+            speed        = ( ("y", "x"), speed                  ),
+            h            = ( ("y", "x"), h                      ),
+ #
+            u_err        = ( ("y", "x"), regrid_u - u           ),
+            v_err        = ( ("y", "x"), regrid_v - v           ),
+            speed_err    = ( ("y", "x"), regrid_speed - speed   ),
+            h_err        = ( ("y", "x"), regrid_h - h           ),
+
+ #
+            du_dx     = ( ("y", "x"), du_dx                     ),
+            du_dy     = ( ("y", "x"), du_dy                     ),
+            dv_dx     = ( ("y", "x"), dv_dx                     ),
+            dv_dy     = ( ("y", "x"), dv_dy                     ),
+ #      
+            mu        = ( ("y", "x"), mu                        ),
+            log_mu    = ( ("y", "x"), np.log10(mu)              ), 
+ #                  
+            e_eff     = ( ("y", "x"), e_eff                     ),
+            e_xx      = ( ("y", "x"), e_xx                      ),
+            e_xy      = ( ("y", "x"), e_xy                      ),
+            e_yy      = ( ("y", "x"), e_yy                      ),
+ #                  
+            tau_eff   = ( ("y", "x"), tau_eff                   ),
+            R_xx      = ( ("y", "x"), R_xx                      ),
+ #                  
+            tau_xx    = ( ("y", "x"), tau_xx                    ),
+            tau_xy    = ( ("y", "x"), tau_xy                    ),
+            tau_yy    = ( ("y", "x"), tau_yy                    ),
+            tau_1     = ( ("y", "x"), tau_1                     ),
+            tau_2     = ( ("y", "x"), tau_2                     ),
         ),  
         coords=dict(
             x=("x", x),

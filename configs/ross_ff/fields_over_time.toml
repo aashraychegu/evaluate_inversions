@@ -1,4 +1,4 @@
-fields = ["log_mu", "tau_eff", "R_xx", "log_e_eff"]
+fields = ["log_mu", "tau_eff", "R_xx", "log_e_eff", "h_err", "speed_err"]
 
 [inversions]
 "tp1" = "Ross__patched_velocity_1995-2001__thickness_1995-2001"

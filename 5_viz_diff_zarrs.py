@@ -48,6 +48,18 @@ plot_vars = [
     ),
     Plot(
         function=partial(plot_field, diff=True),
+        field="speed",
+        label="Speed Difference",  
+        latex=r"$\Delta\sqrt{u^2+v^2}$",
+    ),
+    Plot(
+        function=partial(plot_field, diff=True),
+        field="h",
+        label="Thickness Difference",  
+        latex=r"$\Delta\mu$",
+    ),
+    Plot(
+        function=partial(plot_field, diff=True),
         field="mu",
         label="Viscosity Difference",  
         latex=r"$\Delta\mu$",
@@ -55,13 +67,13 @@ plot_vars = [
     Plot(
         function=partial(plot_log_field, diff=True),
         field="mu",
-        label="Log of the Viscosity Difference",
+        label="Log of the Difference in Viscosity",
         latex=r"$\log(\Delta\mu)$",
     ),
     Plot(
         function=partial(plot_field, diff=True),
         field="delta log(mu)",
-        label="Difference of the Log Viscosities",
+        label="Difference of Log Viscosity",
         latex=r"$\Delta\log\mu$",
     ),
     Plot(
