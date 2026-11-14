@@ -14,7 +14,7 @@ all_plot_vars = {
     "speed"         : Plot(function = plot_field, field = "speed", latex = r"$\sqrt{u^2 + v^2}$", label = "Speed", cbmin = None, cbmax = None),
     "speed_err"     : Plot(function = plot_field, field = "speed_err", latex = r"$\sqrt{u^2 + v^2} - \sqrt{u_{pred}^2 + v_{pred}^2}$", label = "Speed Error", cbmin = None, cbmax = None),
     "height"        : Plot(function = plot_field, field = "h", latex = r"$h$", label = "Height", cbmin = None, cbmax = None),
-    "height_err"    : Plot(function = plot_field, field = "h_err", latex = "r$h - h_{pred}$", label = "Height Error", cbmin = None, cbmax = None),
+    "height_err"    : Plot(function = plot_field, field = "h_err", latex = r"$h - h_{pred}$", label = "Height Error", cbmin = None, cbmax = None),
 
     "mu"            : Plot(function=plot_field,     field="mu",         latex=r"$\mu$",                       label="Viscosity",                   cbmin=None, cbmax=None),
     "log_mu"        : Plot(function=plot_log_field, field="mu",         latex=r"$\log(\mu)$",                  label="Log Viscosity",               cbmin=None, cbmax=None),
