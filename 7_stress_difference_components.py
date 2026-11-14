@@ -27,43 +27,43 @@ comparisons = config["comparisons"]
 linear_plots = {
     "Delta tau_eff":    Plot(function=plot_field,        
                              field="diff",      
-                             cbmin = None, 
-                             cbmax = None, 
+                             cbmin = 5e4, 
+                             cbmax = -5e4, 
                              label="Delta tau_eff",                
-                             latex=r"$\tau_{eff,2} = \tau_{eff,1}$"       
+                             latex=r"$\tau_{eff,2} - \tau_{eff,1}$"       
                             ),
     "tau_Eff from deltas": Plot(function=plot_field,        
                              field="foil",      
-                             cbmin = None, 
-                             cbmax = None, 
+                             cbmin = 5e4, 
+                             cbmax = -5e4, 
                              label="tau_eff from deltas",                
                              latex=r"$2(\mu_2 - \mu_1)*(\dot{\varepsilon_2} - \dot{\varepsilon_1})$"       
                             ),
     "mu2 times edot2": Plot(function=plot_field,        
                              field="f",      
-                             cbmin = None, 
-                             cbmax = None, 
+                             cbmin = 5e5, 
+                             cbmax = 0, 
                              label="mu2 times edot2",                
                              latex=r"$2(\mu_2 * \dot{\varepsilon_2})$"       
                             ),
     "-mu2 times edot1": Plot(function=plot_field,        
                              field="o",      
-                             cbmin = None, 
-                             cbmax = None, 
+                             cbmin = 1e5, 
+                             cbmax = -1e5, 
                              label="-mu2 times edot1",                
                              latex=r"$-2(\mu_2 * \dot{\varepsilon_1})$"       
                             ),
     "-mu1 times edot2": Plot(function=plot_field,        
                              field="i",      
-                             cbmin = None, 
-                             cbmax = None, 
+                             cbmin = 1e5, 
+                             cbmax = -1e5, 
                              label="-mu1 times edot2",                
                              latex=r"$-2(\mu_1 * \dot{\varepsilon_2})$"       
                             ),
     "mu1 times edot1": Plot(function=plot_field,        
                              field="l",      
-                             cbmin = None, 
-                             cbmax = None, 
+                             cbmin = 5e5, 
+                             cbmax = 0, 
                              label="mu1 times edot1",                
                              latex=r"$(\mu_1 * \dot{\varepsilon_1})$"       
                             ),
@@ -153,7 +153,7 @@ def do_plots(plots, plot_type):
 
         values = get_values(first_zarr, second_zarr)
 
-        for row,(name, plot) in tqdm(enumerate(plots.items())):
+        for row,(name, plot) in tqdm(enumerate(plots.items()), smoothing = 0, position = 0):
             plot({"values": values}, ax[row])
 
         parent_dir = output_dir / label

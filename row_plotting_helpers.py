@@ -68,9 +68,9 @@ def _plot_row(
 
     # Explicit colorbar limits take precedence over the automatic ones
     if cbmin is not None:
-        norm.vmin = float(cbmin)
+        norm.vmin = max(float(cbmin),vmin)
     if cbmax is not None:
-        norm.vmax = float(cbmax)
+        norm.vmax = min(float(cbmax),vmax)
 
     # Common spatial extent across the row (union of valid regions)
     extents = [e for e in (_valid_extent(da) for da in das) if e is not None]
