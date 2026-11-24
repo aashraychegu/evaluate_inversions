@@ -1,0 +1,14 @@
+fields = ["log_mu", "tau_eff", "R_xx", "log_e_eff", "height_err", "speed_err"]
+
+[inversions]
+"2009"       = "PineIsland__smoothed-2007-2009_2009-09-15_velocity__smoothed-2007-2009_2009-09-15_thickness"
+"2016"       = "PineIsland__Aashray-2016-annual-mean_velocity__2016_thickness"
+"2017"       = "PineIsland__cleaned-2017-11-15_velocity__cleaned-2017-11-15_thickness"
+"2020"       = "PineIsland__2020-05-16_velocity__2020-05-16_thickness"
+"2020-12-01" = "PineIsland__WellsMoran2026-20201201-pm30d_velocity__bm4_thickness"
+"2021-06-05" = "PineIsland__WellsMoran2026-20210605-pm30d_velocity__bm4_thickness"
+"2021-12-02" = "PineIsland__WellsMoran2026-20211202-pm30d_velocity__bm4_thickness"
+"2022-06-06" = "PineIsland__WellsMoran2026-20220606-pm30d_velocity__bm4_thickness"
+"2022-12-03" = "PineIsland__WellsMoran2026-20221203-pm30d_velocity__bm4_thickness"
+"2023-06-01" = "PineIsland__WellsMoran2026-20230601-pm30d_velocity__bm4_thickness"
+"2023-12-10" = "PineIsland__WellsMoran2026-20231210-pm30d_velocity__bm4_thickness"

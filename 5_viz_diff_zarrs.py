@@ -11,25 +11,25 @@ from plotting_helpers import Plot, plot_field, plot_log_field, plot_field_notext
 
 plot_vars = [
     Plot(
-        function=compare_fields,
+        function=partial(compare_fields, diff = True),
         field=("h", "regrid_h"),
         label="Thickness Difference",
         latex=("$h$", r"$h_{regrid}$"),
     ),
     Plot(
-        function=compare_fields,
+        function=partial(compare_fields, diff = True),
         field=("u", "regrid_u"),
         label="X Velocity Difference",
         latex=("$u$", r"$u_{regrid}$"),
     ),
     Plot(
-        function=compare_fields,
+        function=partial(compare_fields, diff = True),
         field=("v", "regrid_v"),
         label="Y Velocity Difference",
         latex=("$v$", r"$v_{regrid}$"),
     ),
     Plot(
-        function=compare_speed,
+        function=partial(compare_speed, diff = True),
         field=("u", "v", "regrid_u", "regrid_v"),
         label="Speed Difference",
         latex=("$u$", "$v$", r"$u_{regrid}$", r"$v_{regrid}$"),

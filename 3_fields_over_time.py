@@ -1,9 +1,9 @@
-import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt  # ty: ignore[import-not-found]
 from pathlib import Path
-import xarray as xr
+import xarray as xr  # ty: ignore[import-not-found]
 import tomllib
 from argparse import ArgumentParser
-from tqdm import tqdm
+from tqdm import tqdm  # ty: ignore[import-not-found]
 from typing import Dict, List
 
 from row_plotting_helpers import Plot, plot_field, plot_log_field
@@ -11,30 +11,30 @@ from row_plotting_helpers import Plot, plot_field, plot_log_field
 
 
 all_plot_vars = {
-    "speed"         : Plot(function = plot_field, field = "speed", latex = r"$\sqrt{u^2 + v^2}$", label = "Speed", cbmin = None, cbmax = None),
-    "speed_err"     : Plot(function = plot_field, field = "speed_err", latex = r"$\sqrt{u^2 + v^2} - \sqrt{u_{pred}^2 + v_{pred}^2}$", label = "Speed Error", cbmin = None, cbmax = None),
-    "height"        : Plot(function = plot_field, field = "h", latex = r"$h$", label = "Height", cbmin = None, cbmax = None),
-    "height_err"    : Plot(function = plot_field, field = "h_err", latex = r"$h - h_{pred}$", label = "Height Error", cbmin = None, cbmax = None),
+    "speed"         : Plot(function = plot_field,   field = "speed",     latex = r"$\sqrt{u^2 + v^2}$", label = "Speed", cbmin = None, cbmax = None),
+    "speed_err"     : Plot(function = plot_field,   field = "speed_err", latex = r"$\sqrt{u^2 + v^2} - \sqrt{u_{pred}^2 + v_{pred}^2}$", label = "Speed Error", cbmin = None, cbmax = None),
+    "height"        : Plot(function = plot_field,   field = "h",         latex = r"$h$", label = "Height", cbmin = None, cbmax = None),
+    "height_err"    : Plot(function = plot_field,   field = "h_err",     latex = r"$h - h_{pred}$", label = "Height Error", cbmin = None, cbmax = None),
 
-    "mu"            : Plot(function=plot_field,     field="mu",         latex=r"$\mu$",                       label="Viscosity",                   cbmin=None, cbmax=None),
-    "log_mu"        : Plot(function=plot_log_field, field="mu",         latex=r"$\log(\mu)$",                  label="Log Viscosity",               cbmin=None, cbmax=None),
+    "mu"            : Plot(function=plot_field,     field="mu",         latex=r"$\mu$",                       label="Viscosity",                   cbmin=None, cbmax=None),  
+    "log_mu"        : Plot(function=plot_log_field, field="mu",         latex=r"$\log(\mu)$",                 label="Log Viscosity",               cbmin=None, cbmax=None), #
     "e_eff"         : Plot(function=plot_field,     field="e_eff",      latex=r"$\dot \epsilon_{eff}$",       label="Effective Strain Rate",       cbmin=None, cbmax=None),
-    "log_e_eff"     : Plot(function=plot_log_field, field="e_eff",      latex=r"$\log(\dot \epsilon_{eff})$",  label="Log Effective Strain Rate",   cbmin=None, cbmax=None),
+    "log_e_eff"     : Plot(function=plot_log_field, field="e_eff",      latex=r"$\log(\dot \epsilon_{eff})$", label="Log Effective Strain Rate",   cbmin=None, cbmax=None), #
     "e_xx"          : Plot(function=plot_field,     field="e_xx",       latex=r"$\dot \epsilon_{xx}$",        label="Strain Rate XX Component",    cbmin=None, cbmax=None),
     "e_xy"          : Plot(function=plot_field,     field="e_xy",       latex=r"$\dot \epsilon_{xy}$",        label="Strain Rate XY Component",    cbmin=None, cbmax=None),
     "e_yy"          : Plot(function=plot_field,     field="e_yy",       latex=r"$\dot \epsilon_{yy}$",        label="Strain YY Component",         cbmin=None, cbmax=None),
-    "tau_eff"       : Plot(function=plot_field,     field="tau_eff",    latex=r"$\tau_{eff}$",                label="Effective Stress",            cbmin=None, cbmax=None),
+    "tau_eff"       : Plot(function=plot_field,     field="tau_eff",    latex=r"$\tau_{eff}$",                label="Effective Stress",            cbmin=None, cbmax=5e5), #
     "tau_xx"        : Plot(function=plot_field,     field="tau_xx",     latex=r"$\tau_{xx}$",                 label="Stress XX Component",         cbmin=None, cbmax=None),
     "tau_xy"        : Plot(function=plot_field,     field="tau_xy",     latex=r"$\tau_{xy}$",                 label="Stress XY Component",         cbmin=None, cbmax=None),
     "tau_yy"        : Plot(function=plot_field,     field="tau_yy",     latex=r"$\tau_{yy}$",                 label="Stress YY Component",         cbmin=None, cbmax=None),
     "tau_1"         : Plot(function=plot_field,     field="tau_1",      latex=r"$\tau_{1}$",                  label="Stress Primary Component",    cbmin=None, cbmax=None),
     "tau_2"         : Plot(function=plot_field,     field="tau_2",      latex=r"$\tau_{2}$",                  label="Stress Secondary Component",  cbmin=None, cbmax=None),
-    "R_xx"          : Plot(function=plot_field,     field="R_xx",       latex=r"$R_{xx}$",                    label="Extensional Stress (R_xx)",   cbmin=None, cbmax=None),
+    "R_xx"          : Plot(function=plot_field,     field="R_xx",       latex=r"$R_{xx}$",                    label="Extensional Stress (R_xx)",   cbmin=0,    cbmax=1e6), #
 
     "anom_mu"       : Plot(function=plot_field,     anomaly=True, field="mu",      latex=r"$\text{Anomaly of} \mu$",                       label="Anomaly of Viscosity",                     cbmin=None, cbmax=None),
-    "anom_log_mu"   : Plot(function=plot_log_field, anomaly=True, field="mu",      latex=r"$\text{Anomaly of} \log(\mu)$",                  label="Anomaly of Log Viscosity",                 cbmin=None, cbmax=None),
+    "anom_log_mu"   : Plot(function=plot_log_field, anomaly=True, field="mu",      latex=r"$\text{Anomaly of} \log(\mu)$",                  label="Anomaly of Log Viscosity",                cbmin=None, cbmax=None),
     "anom_e_eff"    : Plot(function=plot_field,     anomaly=True, field="e_eff",   latex=r"$\text{Anomaly of} \dot \epsilon_{eff}$",       label="Anomaly of Effective Strain Rate",         cbmin=None, cbmax=None),
-    "anom_log_e_eff": Plot(function=plot_log_field, anomaly=True, field="e_eff",   latex=r"$\text{Anomaly of} \log(\dot \epsilon_{eff})$",  label="Anomaly of Log Effective Strain Rate",     cbmin=None, cbmax=None),
+    "anom_log_e_eff": Plot(function=plot_log_field, anomaly=True, field="e_eff",   latex=r"$\text{Anomaly of} \log(\dot \epsilon_{eff})$",  label="Anomaly of Log Effective Strain Rate",    cbmin=None, cbmax=None),
     "anom_e_xx"     : Plot(function=plot_field,     anomaly=True, field="e_xx",    latex=r"$\text{Anomaly of} \dot \epsilon_{xx}$",        label="Anomaly of Strain Rate XX Component",      cbmin=None, cbmax=None),
     "anom_e_xy"     : Plot(function=plot_field,     anomaly=True, field="e_xy",    latex=r"$\text{Anomaly of} \dot \epsilon_{xy}$",        label="Anomaly of Strain Rate XY Component",      cbmin=None, cbmax=None),
     "anom_e_yy"     : Plot(function=plot_field,     anomaly=True, field="e_yy",    latex=r"$\text{Anomaly of} \dot \epsilon_{yy}$",        label="Anomaly of Strain YY Component",           cbmin=None, cbmax=None),

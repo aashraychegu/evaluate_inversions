@@ -1,0 +1,10 @@
+fields = ["log_mu", "tau_eff", "R_xx", "log_e_eff", "height_err", "speed_err"]
+
+[inversions]
+"2020-12-01" = "PineIsland__WellsMoran2026-20201201-pm30d_velocity__bm4_thickness"
+"2021-06-05" = "PineIsland__WellsMoran2026-20210605-pm30d_velocity__bm4_thickness"
+"2021-12-02" = "PineIsland__WellsMoran2026-20211202-pm30d_velocity__bm4_thickness"
+"2022-06-06" = "PineIsland__WellsMoran2026-20220606-pm30d_velocity__bm4_thickness"
+"2022-12-03" = "PineIsland__WellsMoran2026-20221203-pm30d_velocity__bm4_thickness"
+"2023-06-01" = "PineIsland__WellsMoran2026-20230601-pm30d_velocity__bm4_thickness"
+"2023-12-10" = "PineIsland__WellsMoran2026-20231210-pm30d_velocity__bm4_thickness"

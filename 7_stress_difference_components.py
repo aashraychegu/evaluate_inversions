@@ -24,7 +24,7 @@ config = tomllib.loads(config_path.read_text())
 comparisons = config["comparisons"]
 
 
-linear_plots = {
+linear_plots: dict[str, Plot] = {
     "Delta tau_eff":    Plot(function=plot_field,        
                              field="diff",      
                              cbmin = 5e4, 
@@ -41,43 +41,43 @@ linear_plots = {
                             ),
     "mu2 times edot2": Plot(function=plot_field,        
                              field="f",      
-                             cbmin = 5e5, 
-                             cbmax = 0, 
+                             cbmin = 0, 
+                             cbmax = None, 
                              label="mu2 times edot2",                
                              latex=r"$2(\mu_2 * \dot{\varepsilon_2})$"       
                             ),
     "-mu2 times edot1": Plot(function=plot_field,        
                              field="o",      
-                             cbmin = 1e5, 
-                             cbmax = -1e5, 
+                             cbmin = None, 
+                             cbmax = None, 
                              label="-mu2 times edot1",                
                              latex=r"$-2(\mu_2 * \dot{\varepsilon_1})$"       
                             ),
     "-mu1 times edot2": Plot(function=plot_field,        
                              field="i",      
-                             cbmin = 1e5, 
-                             cbmax = -1e5, 
+                             cbmin = -1e6, 
+                             cbmax = None, 
                              label="-mu1 times edot2",                
                              latex=r"$-2(\mu_1 * \dot{\varepsilon_2})$"       
                             ),
     "mu1 times edot1": Plot(function=plot_field,        
                              field="l",      
-                             cbmin = 5e5, 
-                             cbmax = 0, 
+                             cbmin = None, 
+                             cbmax = None, 
                              label="mu1 times edot1",                
                              latex=r"$(\mu_1 * \dot{\varepsilon_1})$"       
                             ),
 }
-log_plots = {
+log_plots: dict[str, Plot] = {
     "Log Delta tau_eff":    Plot(function=plot_log_field,        
-                             field="diff",      
+                             field="log_diff",      
                              cbmin = None, 
                              cbmax = None, 
                              label="Delta tau_eff",                
-                             latex=r"$\tau_{eff,2} = \tau_{eff,1}$"       
+                             latex=r"$\tau_{eff,2} - \tau_{eff,1}$"       
                             ),
     "Log tau_Eff from deltas": Plot(function=plot_log_field,        
-                             field="foil",      
+                             field="log_foil",      
                              cbmin = None, 
                              cbmax = None, 
                              label="tau_eff from deltas",                
@@ -121,9 +121,14 @@ def get_values(t_2: xr.Dataset, t_1: xr.Dataset) -> xr.Dataset:
     d_edot = edot_eff_2 - edot_eff_1
     d_mu = mu_2 - mu_1
 
+    prelog_d_edot = edot_eff_2 / edot_eff_1
+    prelog_d_mu = mu_2 / mu_1
+
     return {
     "diff": t_2["tau_eff"] - t_1["tau_eff"],
     "foil":  2* d_edot * d_mu,
+    "log_diff": t_2["tau_eff"] / t_1["tau_eff"],
+    "log_foil": 2*prelog_d_edot*prelog_d_mu,
     "f":     2 * mu_2 * edot_eff_2,
     "o":    -2 * mu_2 * edot_eff_1,
     "i":    -2 * mu_1 * edot_eff_2,

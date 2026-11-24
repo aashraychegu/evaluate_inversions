@@ -1,28 +1,22 @@
 from argparse import ArgumentParser
 from pathlib import Path
-from tqdm import tqdm
+from tqdm import tqdm  # ty: ignore[import-not-found]
 from load_trained_network import load_trained_network
-from shapely import wkt
-from shapely import contains_xy
+from shapely import wkt  # ty: ignore[import-not-found]
+from shapely import contains_xy  # ty: ignore[import-not-found]
 import tomllib
 import shutil
 import json
-# pyrefly: ignore [missing-import]
-import numpy as np
-# pyrefly: ignore [missing-import]
-import pyproj
-# pyrefly: ignore [missing-import]
-import matplotlib
+import numpy as np  # ty: ignore[import-not-found]
+import pyproj  # ty: ignore[import-not-found]
+import matplotlib  # ty: ignore[import-not-found]
 matplotlib.use("Agg")
-# pyrefly: ignore [missing-import]
-import matplotlib.pyplot as plt
-# pyrefly: ignore [missing-import]
-import xarray as xr
-# pyrefly: ignore [missing-import]
-import rioxarray as rxr
+import matplotlib.pyplot as plt  # ty: ignore[import-not-found]
+import xarray as xr  # ty: ignore[import-not-found]
+import rioxarray as rxr  # ty: ignore[import-not-found]
 from time import perf_counter
 from functools import partial
-from plotting_helpers import Plot, plot_field, plot_log_field, compare_fields, compare_speed, plot_side_by_side, plot_stress_to_strain_rate, histogram
+from plotting_helpers import Plot, plot_field, plot_log_field, plot_log_field_jet, compare_fields, compare_speed, plot_side_by_side, plot_stress_to_strain_rate, histogram
 
 parser = ArgumentParser()
 parser.add_argument("--folder", required = True)
@@ -72,6 +66,12 @@ plot_vars = [
         field="mu",
         label="Log Viscosity",
         latex=r"$\mu$",
+    ),
+    Plot(
+        function=plot_log_field_jet,
+        field="mu",
+        label="Log Viscosity Jet",
+        latex=r"$\log(\mu)$ Jet",
     ),
     Plot(
         function=plot_field,

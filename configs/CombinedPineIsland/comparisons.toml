@@ -1,0 +1,14 @@
+[comparisons."Comparing WM2026 from 2020-2023"]
+list = [
+    "PineIsland__smoothed-2007-2009_2009-09-15_velocity__smoothed-2007-2009_2009-09-15_thickness", 
+    "PineIsland__Aashray-2016-annual-mean_velocity__2016_thickness",
+    "PineIsland__cleaned-2017-11-15_velocity__cleaned-2017-11-15_thickness", 
+    "PineIsland__cleaned-2020-05-16_velocity__cleaned-2020-05-16_thickness",
+    "PineIsland__WellsMoran2026-20201201-pm30d_velocity__bm4_thickness",
+    "PineIsland__WellsMoran2026-20210605-pm30d_velocity__bm4_thickness",
+    "PineIsland__WellsMoran2026-20211202-pm30d_velocity__bm4_thickness",
+    "PineIsland__WellsMoran2026-20220606-pm30d_velocity__bm4_thickness",
+    "PineIsland__WellsMoran2026-20221203-pm30d_velocity__bm4_thickness",
+    "PineIsland__WellsMoran2026-20230601-pm30d_velocity__bm4_thickness",
+    "PineIsland__WellsMoran2026-20231210-pm30d_velocity__bm4_thickness",
+]

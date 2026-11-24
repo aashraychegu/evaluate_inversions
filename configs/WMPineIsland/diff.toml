@@ -1,0 +1,23 @@
+[comparisons."2021-06 minus 2020-12"]
+minuend = "PineIsland__WellsMoran2026-20210605-pm30d_velocity__bm4_thickness"
+subtrahend = "PineIsland__WellsMoran2026-20201201-pm30d_velocity__bm4_thickness"
+
+[comparisons."2021-12 minus 2021-06"]
+minuend = "PineIsland__WellsMoran2026-20211202-pm30d_velocity__bm4_thickness"
+subtrahend = "PineIsland__WellsMoran2026-20210605-pm30d_velocity__bm4_thickness"
+
+[comparisons."2022-06 minus 2021-12"]
+minuend = "PineIsland__WellsMoran2026-20220606-pm30d_velocity__bm4_thickness"
+subtrahend = "PineIsland__WellsMoran2026-20211202-pm30d_velocity__bm4_thickness"
+
+[comparisons."2022-12 minus 2022-06"]
+minuend = "PineIsland__WellsMoran2026-20221203-pm30d_velocity__bm4_thickness"
+subtrahend = "PineIsland__WellsMoran2026-20220606-pm30d_velocity__bm4_thickness"
+
+[comparisons."2023-06 minus 2022-12"]
+minuend = "PineIsland__WellsMoran2026-20230601-pm30d_velocity__bm4_thickness"
+subtrahend = "PineIsland__WellsMoran2026-20221203-pm30d_velocity__bm4_thickness"
+
+[comparisons."2023-12 minus 2023-06"]
+minuend = "PineIsland__WellsMoran2026-20231210-pm30d_velocity__bm4_thickness"
+subtrahend = "PineIsland__WellsMoran2026-20230601-pm30d_velocity__bm4_thickness"

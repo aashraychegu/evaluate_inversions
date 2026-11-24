@@ -40,6 +40,13 @@ def plot_field(ds, field: tuple[str], name, imgs_save_dir, save_name, latex=None
     plt.close()
     return save_path
 
+from pathlib import Path
+from collections.abc import Hashable
+
+import numpy as np
+import matplotlib.pyplot as plt
+import xarray as xr
+
 
 def plot_log_field(ds, field: tuple[str], name, imgs_save_dir, save_name, latex=None, pad=0.02, diff=False,
                    cbmin=None, cbmax=None) -> Path:
@@ -72,6 +79,69 @@ def plot_log_field(ds, field: tuple[str], name, imgs_save_dir, save_name, latex=
 
     plt.savefig(save_path, dpi=200)
     plt.close()
+    return save_path
+
+
+def plot_log_field_jet(
+    ds: xr.Dataset,
+    field: Hashable,
+    name: str,
+    imgs_save_dir: str | Path,
+    save_name: str,
+    latex: str | None = None,
+    pad: float = 0.02,
+    diff: bool = False,
+    cbmin: float | None = 1e13,
+    cbmax: float | None = 2e16,
+    linthresh: float = 1.0,
+) -> Path:
+    if latex is None:
+        latex = str(field)
+
+    imgs_save_dir = Path(imgs_save_dir)
+    imgs_save_dir.mkdir(parents=True, exist_ok=True)
+    save_path = imgs_save_dir / save_name
+
+    da = ds[field]
+    if not {"x", "y"}.issubset(da.dims):
+        raise ValueError(f"Field {field!r} must have 'x' and 'y' dims, got {da.dims}")
+
+    # Bounding box of non-NaN data
+    valid = da.notnull()
+    xv = da["x"].values[valid.any("y").values]
+    yv = da["y"].values[valid.any("x").values]
+    if xv.size == 0 or yv.size == 0:
+        raise ValueError(f"Field {field!r} contains only NaNs")
+    xmin, xmax = float(xv.min()), float(xv.max())
+    ymin, ymax = float(yv.min()), float(yv.max())
+
+    # Colormap / limits
+    if diff:
+        cmap = "RdBu_r"
+        if cbmin is None and cbmax is None:
+            vabs = float(np.nanmax(np.abs(da.values)))
+            cbmin, cbmax = -vabs, vabs
+    else:
+        cmap = "jet"
+
+    norm = SymLogNorm(linthresh=linthresh, vmin=cbmin, vmax=cbmax, base=10)
+
+    fig, ax = plt.subplots(figsize=(10, 10))
+    p = da.plot.imshow(
+        x="x", y="y", ax=ax, add_colorbar=True, cmap=cmap, norm=norm,
+    )
+    ax.set_aspect("equal")
+    if p.colorbar is not None:
+        p.colorbar.set_label(latex)
+
+    dx = (xmax - xmin) * pad
+    dy = (ymax - ymin) * pad
+    ax.set_title(f"{name} : {latex} (log scale)", fontsize=10)
+    ax.set_xlim(xmin - dx, xmax + dx)
+    ax.set_ylim(ymin - dy, ymax + dy)
+
+    fig.savefig(save_path, dpi=200, bbox_inches="tight")
+    plt.close(fig)
     return save_path
 
 

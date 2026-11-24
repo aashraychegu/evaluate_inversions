@@ -1,0 +1,10 @@
+[comparisons."Comparing WM2026 from 2020-2023"]
+list = [
+    "PineIsland__WellsMoran2026-20201201-pm30d_velocity__bm4_thickness",
+    "PineIsland__WellsMoran2026-20210605-pm30d_velocity__bm4_thickness",
+    "PineIsland__WellsMoran2026-20211202-pm30d_velocity__bm4_thickness",
+    "PineIsland__WellsMoran2026-20220606-pm30d_velocity__bm4_thickness",
+    "PineIsland__WellsMoran2026-20221203-pm30d_velocity__bm4_thickness",
+    "PineIsland__WellsMoran2026-20230601-pm30d_velocity__bm4_thickness",
+    "PineIsland__WellsMoran2026-20231210-pm30d_velocity__bm4_thickness",
+]

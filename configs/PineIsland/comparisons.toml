@@ -1,0 +1,7 @@
+[comparisons."Comparing 2009, 2016, 2017, 2020"]
+list = [
+    "PineIsland__smoothed-2007-2009_2009-09-15_velocity__smoothed-2007-2009_2009-09-15_thickness", 
+    "PineIsland__Aashray-2016-annual-mean_velocity__2016_thickness",
+    "PineIsland__cleaned-2017-11-15_velocity__cleaned-2017-11-15_thickness", 
+    "PineIsland__cleaned-2020-05-16_velocity__cleaned-2020-05-16_thickness"
+]

@@ -31,7 +31,7 @@ plots = {
     "tau_eff":      Plot(function=plot_field,        field="tau_eff", cbmin = None, cbmax = None, label="Linear Effective Stress",         latex=r"$\tau_{eff}$"),
     # log scale 
     "log_mu":       Plot(function=plot_log_field,    field="mu",      cbmin = None, cbmax = None, label="Log Viscosity",            latex=r"$\mu$"        ),
-    "log_e_eff":    Plot(function=plot_log_field,    field="e_eff",   cbmin = None, cbmax = None, label="Log Effective Strain Rate",latex=r"$e_{eff}$"    ),
+    "log_e_eff":    Plot(function=plot_log_field,    field="e_eff",   cbmin = None, cbmax = 5e-8, label="Log Effective Strain Rate",latex=r"$e_{eff}$"    ),
     "log_tau_eff":  Plot(function=plot_log_field,    field="tau_eff", cbmin = None, cbmax = None, label="Log Effective Stress",     latex=r"$\tau_{eff}$" ),
 }
 
@@ -55,7 +55,7 @@ for label, zarrs in tqdm(comparisons.items(), smoothing=0, position=1,):
     )
 
     for row,(name, plot) in tqdm(enumerate(plots.items())):
-        plot({zarrs["minuend"]: first_zarr, zarrs["subtrahend"]: second_zarr}, ax[row])
+        plot({zarrs["subtrahend"]: second_zarr, zarrs["minuend"]: first_zarr}, ax[row])
 
     parent_dir = output_dir / label
     save_path =  parent_dir / "Side By Side Fields.png"
