@@ -27,10 +27,10 @@ if not folder.exists():
 subfolders = sorted(list(folder.iterdir()))
 
 def mean_abs(x):
-    return np.mean(np.abs(x))
+    return np.nanmean(np.abs(x))
 
 def median_abs(x):
-    return np.median(np.abs(x))
+    return np.nanmedian(np.abs(x))
 
 parse = tomllib.loads(Path("./mapping.toml").read_text())
     
@@ -44,7 +44,7 @@ for count, subfolder in tqdm(list(enumerate(subfolders))):
     shelf, raw_velocity, raw_thickness = inversion_name.split("__") 
     velocity_product, velocity_start, velocity_end = parse.get(raw_velocity,[raw_velocity, "-", "-"])
     thickness_product, thickness_start, thickness_end = parse.get(raw_thickness,[raw_thickness, "-", "-"])
-    res_x, res_y = data["residual_x"], data["residual_y"]
+    res_x, res_y = data["residual_x_fine"], data["residual_y_fine"]
     mean_res_x, mean_res_y = mean_abs(res_x)  , mean_abs(res_y)
     med_res_x , med_res_y  = median_abs(res_x), median_abs(res_y)
     table.append([count,shelf, velocity_product, velocity_start, velocity_end,thickness_product, thickness_start, thickness_end,mean_res_x, mean_res_y, med_res_x , med_res_y])

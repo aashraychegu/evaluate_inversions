@@ -97,6 +97,12 @@ for subfolder in (pbar := tqdm(subfolders, smoothing = 0, position = 0, dynamic_
     orig_h_x = raw_source["x_h"]
     orig_h_y = raw_source["y_h"]
     orig_h = raw_source["h_true"]
+    
+    x_fine = raw_source["x_fine"]
+    y_fine = raw_source["y_fine"]
+    term0 = raw_source["term0"]
+    resid_x = raw_source["residual_x_fine"]
+    resid_y = raw_source["residual_y_fine"]
 
     config = json.loads((subfolder / "config.json").read_text())
     source_file = Path(config["data"]["source"])
@@ -136,6 +142,9 @@ for subfolder in (pbar := tqdm(subfolders, smoothing = 0, position = 0, dynamic_
     regrid_u = regrid_scalar(orig_uv_x, orig_uv_y, orig_u, X, Y, valid_data_mask)
     regrid_v = regrid_scalar(orig_uv_x, orig_uv_y, orig_v, X, Y, valid_data_mask)
     regrid_speed = (regrid_u **2 + regrid_v**2)**(1/2)
+    regrid_resid_x = regrid_scalar(x_fine, y_fine,resid_x, X, Y, valid_data_mask)
+    regrid_resid_y = regrid_scalar(x_fine, y_fine,resid_y, X, Y, valid_data_mask)
+    regrid_term0 = regrid_scalar(x, y, term0, X, Y, valid_mask)
     stacked_xy = np.column_stack([X[inside_mask], Y[inside_mask]])
 
     strain_rate = network.strain_rate(stacked_xy)
@@ -147,11 +156,11 @@ for subfolder in (pbar := tqdm(subfolders, smoothing = 0, position = 0, dynamic_
     h     = to_grid(fields["h"],               inside_mask)
     speed = (u **2 + v**2)**(1/2)
  
-    du_dx = to_grid(strain_rate["u_x"]      /  sec_in_year   , inside_mask)
-    du_dy = to_grid(strain_rate["u_y"]      /  sec_in_year   , inside_mask)
-    dv_dx = to_grid(strain_rate["v_x"]      /  sec_in_year   , inside_mask)
+    du_dx = to_grid(strain_rate["u_x"]      /  sec_in_year  , inside_mask)
+    du_dy = to_grid(strain_rate["u_y"]      /  sec_in_year  , inside_mask)
+    dv_dx = to_grid(strain_rate["v_x"]      /  sec_in_year  , inside_mask)
     dv_dy = to_grid(strain_rate["v_y"]      / sec_in_year   , inside_mask)
-    e_eff = to_grid(strain_rate["e_eff"]    / sec_in_year , inside_mask)
+    e_eff = to_grid(strain_rate["e_eff"]    / sec_in_year   , inside_mask)
     e_xx  = to_grid(strain_rate["exx"]      / sec_in_year   , inside_mask)
     e_xy  = to_grid(strain_rate["exy"]      / sec_in_year   , inside_mask)
     e_yy  = to_grid(strain_rate["eyy"]      / sec_in_year   , inside_mask)
@@ -178,6 +187,13 @@ for subfolder in (pbar := tqdm(subfolders, smoothing = 0, position = 0, dynamic_
             regrid_v     = ( ("y", "x"), regrid_v               ),
             regrid_speed = ( ("y", "x"), regrid_speed),
             regrid_h     = ( ("y", "x"), regrid_h               ),
+
+            resid_x      = ( ("y", "x"), regrid_resid_x),
+            resid_y      = ( ("y", "x"), regrid_resid_y),
+
+            norm_resid_x = ( ("y", "x"), regrid_resid_x/regrid_term0),
+            norm_resid_y = ( ("y", "x"), regrid_resid_y/regrid_term0),
+            
  #            
             u            = ( ("y", "x"), u                      ),
             v            = ( ("y", "x"), v                      ),

@@ -1,4 +1,4 @@
-fields = ["log_mu", "tau_eff", "R_xx", "log_e_eff", "height_err", "speed_err"]
+fields = ["log_mu", "tau_eff", "R_xx", "log_e_eff", "height_err", "speed_err", "resid_x", "resid_y"]
 
 [inversions]
 "2020-12-01" = "PineIsland__WellsMoran2026-20201201-pm30d_velocity__bm4_thickness"
