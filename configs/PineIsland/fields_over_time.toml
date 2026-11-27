@@ -1,4 +1,4 @@
-fields = ["log_mu", "tau_eff", "R_xx", "log_e_eff","height_err", "speed_err", "resid_x", "resid_y"]
+fields = ["log_mu", "tau_eff", "R_xx", "log_e_eff","height_err", "speed_err", "resid_x", "resid_y", "norm_resid_x", "norm_resid_y"]
 
 [inversions]
 "2009" = "PineIsland__smoothed-2007-2009_2009-09-15_velocity__smoothed-2007-2009_2009-09-15_thickness"

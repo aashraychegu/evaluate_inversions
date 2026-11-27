@@ -11,12 +11,14 @@ from row_plotting_helpers import Plot, plot_field, plot_log_field
 
 
 all_plot_vars = {
-    "speed"         : Plot(function = plot_field,   field = "speed",     latex = r"$\sqrt{u^2 + v^2}$", label = "Speed", cbmin = None, cbmax = None),
-    "speed_err"     : Plot(function = plot_field,   field = "speed_err", latex = r"$\sqrt{u^2 + v^2} - \sqrt{u_{pred}^2 + v_{pred}^2}$", label = "Speed Error", cbmin = None, cbmax = None),
-    "height"        : Plot(function = plot_field,   field = "h",         latex = r"$h$", label = "Height", cbmin = None, cbmax = None),
-    "height_err"    : Plot(function = plot_field,   field = "h_err",     latex = r"$h - h_{pred}$", label = "Height Error", cbmin = -100, cbmax = 100),
-    "resid_x"    : Plot(function = plot_field,   field = "resid_x",     latex = r"$\text{X direction fine residual}$", label = "Residual X", cbmin = None, cbmax = None),
-    "resid_y"    : Plot(function = plot_field,   field = "resid_y",     latex = r"$\text{X direction fine residual}$", label = "Residual Y", cbmin = None, cbmax = None),
+    "speed"         : Plot(function = plot_field,   field = "speed",        latex = r"$\sqrt{u^2 + v^2}$", label = "Speed", cbmin = None, cbmax = None),
+    "speed_err"     : Plot(function = plot_field,   field = "speed_err",    latex = r"$\sqrt{u^2 + v^2} - \sqrt{u_{pred}^2 + v_{pred}^2}$", label = "Speed Error", cbmin = None, cbmax = None),    
+    "height"        : Plot(function = plot_field,   field = "h",            latex = r"$h$", label = "Height", cbmin = None, cbmax = None),
+    "height_err"    : Plot(function = plot_field,   field = "h_err",        latex = r"$h - h_{pred}$", label = "Height Error", cbmin = -100, cbmax = 100),
+    "resid_x"    : Plot(function = plot_field,      field = "resid_x",      latex = r"$\text{X direction fine residual}$", label = "Residual X", cbmin = None, cbmax = None),
+    "resid_y"    : Plot(function = plot_field,      field = "resid_y",      latex = r"$\text{Y direction fine residual}$", label = "Residual Y", cbmin = None, cbmax = None),
+    "norm_resid_x"    : Plot(function = plot_field, field = "norm_resid_x", latex = r"$\text{X direction normalized fine residual}$", label = "Normed Residual X", cbmin = None, cbmax = None),
+    "norm_resid_y"    : Plot(function = plot_field, field = "norm_resid_y", latex = r"$\text{Y direction normalized fine residual}$", label = "Normed Residual Y", cbmin = None, cbmax = None),
 
     "mu"            : Plot(function=plot_field,     field="mu",         latex=r"$\mu$",                       label="Viscosity",                   cbmin=None, cbmax=None),  
     "log_mu"        : Plot(function=plot_log_field, field="mu",         latex=r"$\log(\mu)$",                 label="Log Viscosity",               cbmin=None, cbmax=None), #

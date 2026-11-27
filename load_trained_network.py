@@ -101,12 +101,13 @@ def load_trained_network(config_path, solver_dir, region=0, params_name="params.
     :param solver_dir: directory containing params.pkl (and config.json)
     :param region: sub-region position for an XPINN; ignored for a PINN
     """
-
     solver_dir = Path(solver_dir)
-    config = djax.load_workflow_config(config_path)
+    config = djax. load_workflow_config(config_path)
+    saved = solver_dir / "config.json"
+    if saved.exists():
+        config.model["network"] = json.loads(saved.read_text())[ "model" ][ "network" ]
     solver = djax.build_solver_from_config(config).prepare()
     solver.load_params(solver_dir / params_name)
-    # _warn_on_config_drift(solver, solver_dir)
     return wrap_solver(solver, region=region)
 
 

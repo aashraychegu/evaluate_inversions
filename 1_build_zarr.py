@@ -144,7 +144,7 @@ for subfolder in (pbar := tqdm(subfolders, smoothing = 0, position = 0, dynamic_
     regrid_speed = (regrid_u **2 + regrid_v**2)**(1/2)
     regrid_resid_x = regrid_scalar(x_fine, y_fine,resid_x, X, Y, valid_data_mask)
     regrid_resid_y = regrid_scalar(x_fine, y_fine,resid_y, X, Y, valid_data_mask)
-    regrid_term0 = regrid_scalar(x, y, term0, X, Y, valid_mask)
+    regrid_term0 = regrid_scalar(x_fine, y_fine, term0, X, Y, valid_data_mask)
     stacked_xy = np.column_stack([X[inside_mask], Y[inside_mask]])
 
     strain_rate = network.strain_rate(stacked_xy)
@@ -185,15 +185,14 @@ for subfolder in (pbar := tqdm(subfolders, smoothing = 0, position = 0, dynamic_
  #
             regrid_u     = ( ("y", "x"), regrid_u               ),
             regrid_v     = ( ("y", "x"), regrid_v               ),
-            regrid_speed = ( ("y", "x"), regrid_speed),
+            regrid_speed = ( ("y", "x"), regrid_speed           ),
             regrid_h     = ( ("y", "x"), regrid_h               ),
 
-            resid_x      = ( ("y", "x"), regrid_resid_x),
-            resid_y      = ( ("y", "x"), regrid_resid_y),
+            resid_x      = ( ("y", "x"), regrid_resid_x         ),
+            resid_y      = ( ("y", "x"), regrid_resid_y         ),
 
-            norm_resid_x = ( ("y", "x"), regrid_resid_x/regrid_term0),
-            norm_resid_y = ( ("y", "x"), regrid_resid_y/regrid_term0),
-            
+            norm_resid_x = ( ("y", "x"), regrid_resid_x / regrid_term0),
+            norm_resid_y = ( ("y", "x"), regrid_resid_y / regrid_term0),     
  #            
             u            = ( ("y", "x"), u                      ),
             v            = ( ("y", "x"), v                      ),
@@ -204,30 +203,29 @@ for subfolder in (pbar := tqdm(subfolders, smoothing = 0, position = 0, dynamic_
             v_err        = ( ("y", "x"), regrid_v - v           ),
             speed_err    = ( ("y", "x"), regrid_speed - speed   ),
             h_err        = ( ("y", "x"), regrid_h - h           ),
-
  #
-            du_dx     = ( ("y", "x"), du_dx                     ),
-            du_dy     = ( ("y", "x"), du_dy                     ),
-            dv_dx     = ( ("y", "x"), dv_dx                     ),
-            dv_dy     = ( ("y", "x"), dv_dy                     ),
- #      
-            mu        = ( ("y", "x"), mu                        ),
-            log_mu    = ( ("y", "x"), np.log10(mu)              ), 
- #                  
-            e_eff     = ( ("y", "x"), e_eff                     ),
-            e_xx      = ( ("y", "x"), e_xx                      ),
-            e_xy      = ( ("y", "x"), e_xy                      ),
-            e_yy      = ( ("y", "x"), e_yy                      ),
- #                  
-            tau_eff   = ( ("y", "x"), tau_eff                   ),
-            R_xx      = ( ("y", "x"), R_xx                      ),
- #                  
-            tau_xx    = ( ("y", "x"), tau_xx                    ),
-            tau_xy    = ( ("y", "x"), tau_xy                    ),
-            tau_yy    = ( ("y", "x"), tau_yy                    ),
-            tau_1     = ( ("y", "x"), tau_1                     ),
-            tau_2     = ( ("y", "x"), tau_2                     ),
-        ),  
+            du_dx        = ( ("y", "x"), du_dx                  ),
+            du_dy        = ( ("y", "x"), du_dy                  ),
+            dv_dx        = ( ("y", "x"), dv_dx                  ),
+            dv_dy        = ( ("y", "x"), dv_dy                  ),
+ #         
+            mu           = ( ("y", "x"), mu                     ),
+            log_mu       = ( ("y", "x"), np.log10(mu)           ), 
+ #                     
+            e_eff        = ( ("y", "x"), e_eff                  ),
+            e_xx         = ( ("y", "x"), e_xx                   ),
+            e_xy         = ( ("y", "x"), e_xy                   ),
+            e_yy         = ( ("y", "x"), e_yy                   ),
+ #                     
+            tau_eff      = ( ("y", "x"), tau_eff                ),
+            R_xx         = ( ("y", "x"), R_xx                   ),
+ #                     
+            tau_xx       = ( ("y", "x"), tau_xx                 ),
+            tau_xy       = ( ("y", "x"), tau_xy                 ),
+            tau_yy       = ( ("y", "x"), tau_yy                 ),
+            tau_1        = ( ("y", "x"), tau_1                  ),
+            tau_2        = ( ("y", "x"), tau_2                  ),
+        ),     
         coords=dict(
             x=("x", x),
             y=("y", y),
